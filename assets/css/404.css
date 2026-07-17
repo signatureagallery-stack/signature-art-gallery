@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  :root{--ink:#ffffff; --paper:#0b0b0c; --signature:#e2087a;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-weight:300;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:0 6vw;
+  }
+  .code{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--signature); letter-spacing:2px; margin-bottom:24px;}
+  h1{font-family:'Fraunces',serif; font-weight:500; font-size:clamp(32px,6vw,56px); margin-bottom:20px;}
+  h1 em{font-style:italic; color:var(--signature);}
+  p{font-size:16px; opacity:0.7; margin-bottom:36px;}
+  a{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--paper); text-decoration:none; border-bottom:1px solid var(--paper); padding-bottom:4px;}
