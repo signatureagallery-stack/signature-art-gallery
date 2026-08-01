@@ -1,0 +1,17 @@
+# Optionnel — utile seulement si héberge sur un serveur Apache classique (OVH mutualisé, etc.)
+# Inutile sur Vercel, Netlify ou GitHub Pages : ignorez ce fichier dans ce cas.
+
+# Page d'erreur personnalisée
+ErrorDocument 404 /404.html
+
+# Forcer HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Mise en cache basique des images
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+</IfModule>
