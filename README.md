@@ -46,6 +46,18 @@ Les polices (Fraunces, Inter, IBM Plex Mono) sont chargées via Google Fonts par
 2. Dans Settings → Pages, active GitHub Pages sur la branche principale
 3. Ajoute ton domaine personnalisé dans le même écran
 
+## Mise à jour — 30 juillet 2026
+
+Changements apportés dans cette version :
+- **Menu** : fond et texte en magenta (couleur de marque), lisible en toutes circonstances (bug d'affichage corrigé)
+- **Boutique** : vignettes plus petites avec espacement, paiement carte bancaire désactivé — seul le virement EFT reste actif. Le clic sur "Commander" ouvre une fenêtre avec numéro de commande auto-généré, formulaire (nom, prénom, adresse, TC Kimlik), choix facture particulier/société (TVA 20% mentionnée si société), et les coordonnées bancaires (LES BELİERS TEKSTİL LİMİTED ŞİRKETİ — voir `product-template.html`)
+- **Bodrum Art Fair** : déplacée de "Prochaines foires" vers "Foires passées" sur l'accueil ; sa page utilise maintenant le gabarit photos + artistes (photos et affiche à ajouter dès réception)
+- **Exposition virtuelle** : tarifs ajoutés (1-3 œuvres : 2000 TL / 4-6 œuvres : 3800 TL) ; nouvelle page `candidature.html` — vrai formulaire fonctionnel (envoi par e-mail, sans backend externe)
+- **Accueil** : photo "Bodrum 2026" ajoutée à la grille, remplace l'ancienne photo "Couleurs"
+- **Version turque complète** : dossier `/tr/` avec toutes les pages traduites (bio de Nadine El Kaffel, conditions Artnouva/Dubai/IAAF İstanbul en turc original). Sélecteur FR/TR présent sur chaque page.
+
+⚠️ Le formulaire de candidature et la fenêtre de commande fonctionnent **par e-mail** (pas de base de données ni de paiement automatisé) — un lien s'ouvre avec toutes les informations pré-remplies, à envoyer manuellement. C'est fonctionnel dès maintenant, sans dépendre d'un service tiers.
+
 ## ⚠️ Ce qui reste à compléter avant mise en ligne définitive
 
 Ce projet est fonctionnel et prêt à héberger, mais certains éléments sont volontairement des **placeholders** en attendant du contenu réel :

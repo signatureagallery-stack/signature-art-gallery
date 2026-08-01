@@ -8,11 +8,10 @@
   .stand-code{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--signature); letter-spacing:1px; display:block; margin-bottom:14px;}
   h1{font-family:'Fraunces',serif; font-weight:500; font-size:clamp(36px,6vw,68px);}
 
-  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:rgba(11,11,12,0.06); margin:0 0 100px;}
-  @media (max-width:900px){ .grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ .grid{grid-template-columns:1fr;} }
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:28px; margin:0 6vw 100px 6vw;}
+  @media (max-width:560px){ .grid{grid-template-columns:repeat(2,1fr); gap:18px;} }
   .product{background:var(--ink); position:relative;}
-  .product-photo{aspect-ratio:4/5; position:relative;}
+  .product-photo{aspect-ratio:4/5; position:relative; border-radius:2px; overflow:hidden;}
   .product-photo::before{content:""; position:absolute; inset:0;}
   .p1::before{background:linear-gradient(135deg,#c9143b,#e2087a 55%,#f5a3c4);}
   .p2::before{background:linear-gradient(160deg,#2c3b2e,#556b4f 45%,#c9b79c);}

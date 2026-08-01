@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/icons/favicon.ico" sizes="any"><link rel="icon" href="assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<title>Candidature — Exposition virtuelle — Signature Art Gallery</title>
+<link rel="stylesheet" href="assets/css/candidature.css">
+</head>
+<body>
+
+<a class="back" href="expo-conditions.html">← Retour aux conditions</a>
+<a href="tr/candidature.html" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">TR</a>
+
+<section class="hero">
+  <span class="stand-code">Exposition virtuelle</span>
+  <h1>Candidature</h1>
+  <p class="intro">Remplissez ce formulaire pour candidater. Préparez à l'avance votre photo, votre CV et la photo de votre œuvre — vous devrez les joindre à l'e-mail généré à la fin.</p>
+</section>
+
+<section class="section">
+  <form id="candidature-form">
+    <div class="field-group"><label>Nom et prénom</label><input type="text" id="c-nom" required></div>
+    <div class="field-group"><label>Numéro de téléphone</label><input type="tel" id="c-tel" required></div>
+    <div class="field-group"><label>Adresse e-mail</label><input type="email" id="c-email" required></div>
+    <div class="field-group"><label>Compte Instagram</label><input type="text" id="c-insta" required></div>
+    <div class="field-group"><label>Portfolio / site web / QR code (lien)</label><input type="text" id="c-portfolio"></div>
+
+    <div class="field-group"><label>CV narratif (parcours artistique)</label><textarea id="c-cv" rows="4" required></textarea></div>
+    <div class="field-group"><label>Manifeste / démarche artistique</label><textarea id="c-manifeste" rows="4" required></textarea></div>
+
+    <div class="section-divider">Œuvre(s) présentée(s)</div>
+    <div class="field-group"><label>Titre de l'œuvre</label><input type="text" id="c-titre" required></div>
+    <div class="field-group"><label>Dimensions</label><input type="text" id="c-dimensions" required></div>
+    <div class="field-group"><label>Technique</label><input type="text" id="c-technique" required></div>
+    <div class="field-group"><label>Année de réalisation</label><input type="text" id="c-annee" required></div>
+    <div class="field-group"><label>Prix de vente</label><input type="text" id="c-prix" required></div>
+
+    <p class="reminder">📎 N'oubliez pas de joindre à l'e-mail : votre photo, la photo HD de l'œuvre (JPG/PNG recadrée), et votre CV/manifeste si sous forme de fichier.</p>
+
+    <button type="submit" class="submit-btn">Envoyer ma candidature →</button>
+  </form>
+</section>
+
+<script src="assets/js/candidature.js" defer></script>
+</body>
+</html>

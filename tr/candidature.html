@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../assets/icons/favicon.ico" sizes="any"><link rel="icon" href="../assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+<title>Başvuru — Dijital Sergi — Signature Art Gallery</title>
+<link rel="stylesheet" href="../assets/css/candidature.css">
+</head>
+<body>
+
+<a class="back" href="expo-conditions.html">← Koşullara dön</a>
+<a href="../candidature.html" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">FR</a>
+
+<section class="hero">
+  <span class="stand-code">Dijital Sergi</span>
+  <h1>Başvuru</h1>
+  <p class="intro">Başvurmak için bu formu doldurun. Fotoğrafınızı, özgeçmişinizi ve eserinizin fotoğrafını önceden hazırlayın — sonunda oluşturulan e-postaya eklemeniz gerekecek.</p>
+</section>
+
+<section class="section">
+  <form id="candidature-form">
+    <div class="field-group"><label>Ad ve soyad</label><input type="text" id="c-nom" required></div>
+    <div class="field-group"><label>Telefon numarası</label><input type="tel" id="c-tel" required></div>
+    <div class="field-group"><label>E-posta adresi</label><input type="email" id="c-email" required></div>
+    <div class="field-group"><label>Instagram hesabı</label><input type="text" id="c-insta" required></div>
+    <div class="field-group"><label>Portfolyo / web sitesi / QR kod (link)</label><input type="text" id="c-portfolio"></div>
+
+    <div class="field-group"><label>Özgeçmiş (sanatsal geçmiş)</label><textarea id="c-cv" rows="4" required></textarea></div>
+    <div class="field-group"><label>Manifesto / sanatsal yaklaşım</label><textarea id="c-manifeste" rows="4" required></textarea></div>
+
+    <div class="section-divider">Sunulan Eser(ler)</div>
+    <div class="field-group"><label>Eser başlığı</label><input type="text" id="c-titre" required></div>
+    <div class="field-group"><label>Ebat</label><input type="text" id="c-dimensions" required></div>
+    <div class="field-group"><label>Teknik</label><input type="text" id="c-technique" required></div>
+    <div class="field-group"><label>Yapım yılı</label><input type="text" id="c-annee" required></div>
+    <div class="field-group"><label>Satış fiyatı</label><input type="text" id="c-prix" required></div>
+
+    <p class="reminder">📎 E-postaya eklemeyi unutmayın: fotoğrafınız, eserin HD fotoğrafı (kırpılmış JPG/PNG) ve dosya halindeyse özgeçmiş/manifesto.</p>
+
+    <button type="submit" class="submit-btn">Başvurumu gönder →</button>
+  </form>
+</section>
+
+<script src="../assets/js/candidature.js" defer></script>
+</body>
+</html>

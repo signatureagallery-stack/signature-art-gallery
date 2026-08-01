@@ -13,19 +13,20 @@
   nav{
     position:fixed; top:0; left:0; right:0; z-index:50;
     display:flex; justify-content:space-between; align-items:center;
-    padding:26px 6vw; mix-blend-mode:difference;
+    padding:26px 6vw; background:var(--signature); backdrop-filter:blur(6px);
   }
-  .nav-mark{font-family:'Fraunces',serif; font-style:italic; font-size:19px;}
-  .nav-links{display:flex; gap:30px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.7;}
+  .nav-mark{font-family:'Fraunces',serif; font-style:italic; font-size:19px; color:#ffffff;}
+  .nav-links{display:flex; gap:30px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.95;}
+  .nav-links a{color:#ffffff;}
   .nav-burger{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; z-index:60;}
-  .nav-burger span{width:22px; height:2px; background:var(--paper); display:block;}
+  .nav-burger span{width:22px; height:2px; background:#ffffff; display:block;}
   @media (max-width:700px){
     .nav-links{
       display:none; position:fixed; top:0; right:0; height:100vh; width:70vw; max-width:280px;
-      background:var(--ink); flex-direction:column; gap:0; align-items:flex-start;
-      padding:100px 30px; box-shadow:-8px 0 24px rgba(0,0,0,0.15); opacity:1;
+      background:var(--signature); flex-direction:column; gap:0; align-items:flex-start;
+      padding:100px 30px; box-shadow:-8px 0 24px rgba(0,0,0,0.25); opacity:1;
     }
-    .nav-links a{padding:14px 0; width:100%; border-bottom:1px solid rgba(11,11,12,0.1);}
+    .nav-links a{padding:14px 0; width:100%; border-bottom:1px solid rgba(255,255,255,0.25); color:#ffffff;}
     .nav-links.open{display:flex;}
     .nav-burger{display:flex;}
   }
@@ -67,7 +68,7 @@
   .aw2::before{background:url(../images/home-photo-2.jpg) center/cover;}
   .aw3::before{background:url(../images/home-photo-3.jpg) center/cover;}
   .aw4::before{background:url(../images/home-photo-4.jpg) center/cover;}
-  .aw5::before{background:url(../images/home-photo-5.jpg) center/cover;}
+  .aw5::before{background:url(../images/home-bodrum-2026.jpg) center/cover;}
   .aw6::before{background:url(../images/home-photo-6.jpg) center/cover;}
   .artwork-card{
     position:relative; z-index:2; background:rgba(246,243,238,0.88); padding:9px 12px; width:100%;

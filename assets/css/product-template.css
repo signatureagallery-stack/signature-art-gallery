@@ -26,12 +26,43 @@
   .pay-card{
     border:1px solid var(--paper); padding:18px 22px;
     display:flex; justify-content:space-between; align-items:center;
+    background:var(--paper); color:#fff; cursor:pointer;
   }
-  .pay-card.primary{background:var(--paper); color:#fff;}
   .pay-label{font-family:'Fraunces',serif; font-size:17px;}
-  .pay-note{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.6; margin-top:3px;}
-  .pay-card.primary .pay-note{opacity:0.7;}
-  .pay-btn{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; border-bottom:1px solid currentColor; white-space:nowrap;}
-  .discount-tag{color:var(--signature); font-family:'IBM Plex Mono',monospace; font-size:11px;}
+  .pay-note{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.7; margin-top:3px;}
+  .pay-btn{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; border-bottom:1px solid currentColor; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; color:inherit; cursor:pointer;}
 
   .bio{max-width:600px; font-size:15px; line-height:1.7; opacity:0.8; margin-top:36px;}
+
+  /* Fenêtre de commande */
+  dialog#order-modal{
+    border:none; padding:0; max-width:480px; width:92vw; border-radius:2px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  dialog#order-modal::backdrop{background:rgba(11,11,12,0.55);}
+  .modal-inner{padding:32px 28px; max-height:85vh; overflow-y:auto;}
+  .modal-title{font-family:'Fraunces',serif; font-size:24px; margin-bottom:4px;}
+  .modal-order-number{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--signature); margin-bottom:24px;}
+  .modal-close{position:absolute; top:16px; right:20px; background:none; border:none; font-size:20px; cursor:pointer; color:var(--paper);}
+  .field-group{margin-bottom:16px;}
+  .field-group label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; opacity:0.65; margin-bottom:6px;}
+  .field-group input, .field-group select{
+    width:100%; padding:10px 12px; border:1px solid rgba(11,11,12,0.2); font-family:'Inter',sans-serif; font-size:14px; background:#fff; color:var(--paper);
+  }
+  .invoice-toggle{display:flex; gap:10px; margin-bottom:16px;}
+  .invoice-toggle label{
+    flex:1; text-align:center; border:1px solid rgba(11,11,12,0.2); padding:10px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer;
+  }
+  .invoice-toggle input{display:none;}
+  .invoice-toggle input:checked + span{background:var(--paper); color:#fff; display:block; margin:-10px; padding:10px;}
+  #company-fields{display:none;}
+  #company-fields.show{display:block;}
+  .vat-note{font-size:12px; opacity:0.6; margin:-6px 0 16px; font-style:italic;}
+  .bank-info{
+    background:rgba(11,11,12,0.04); padding:16px; margin:20px 0; font-size:13px; line-height:1.8;
+  }
+  .bank-info strong{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.6; margin-bottom:6px;}
+  .modal-submit{
+    width:100%; padding:16px; background:var(--signature); color:#fff; border:none;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; margin-top:8px;
+  }
