@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../../assets/icons/favicon.ico" sizes="any"><link rel="icon" href="../../assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="../../assets/icons/apple-touch-icon.png">
+<title>235 — Signature Art Gallery</title>
+<link rel="stylesheet" href="../../assets/css/product-template.css">
+</head>
+<body>
+
+<a class="back" href="../boutique.html">← Butiğe dön</a>
+<a href="../../produits/ugur-akin-235.html" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">FR</a>
+
+<section class="product-hero">
+  <div class="product-photo" style="background-image:url(../../assets/images/boutique/235.jpg);"></div>
+  <div>
+    <span class="stand-code">Mevcut</span>
+    <h1>235</h1>
+    <div class="artist-name">Uğur Akın</div>
+
+    <div class="specs">
+      <div><span>Teknik</span><span>Tuval üzerine yağlı boya</span></div>
+      <div><span>Ebat</span><span>25x25 cm</span></div>
+      <div><span>Yıl</span><span>2025</span></div>
+    </div>
+
+    <div class="price">8.000 TL</div>
+
+    <div class="pay-options">
+      <div class="pay-card" onclick="openOrderModal('235 — Uğur Akın', '8.000')">
+        <div>
+          <div class="pay-label">Banka havalesi (EFT)</div>
+          <div class="pay-note">Havale kontrolünden sonra 24-48 saat içinde onay</div>
+        </div>
+        <button class="pay-btn" type="button">Sipariş ver →</button>
+      </div>
+    </div>
+
+    <p class="bio">Küçük format, canlı renklerle liman sahnesi.</p>
+  </div>
+</section>
+
+<dialog id="order-modal">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="document.getElementById('order-modal').close()">✕</button>
+    <div class="modal-title">Siparişi tamamla</div>
+    <div class="modal-order-number">Sipariş numarası : <span id="order-number"></span></div>
+
+    <form id="order-form">
+      <div class="field-group"><label>Ad</label><input type="text" id="of-nom" required></div>
+      <div class="field-group"><label>Soyad</label><input type="text" id="of-prenom" required></div>
+      <div class="field-group"><label>Teslimat adresi</label><input type="text" id="of-adresse" required></div>
+      <div class="field-group"><label>TC Kimlik No</label><input type="text" id="of-tckimlik" required></div>
+
+      <div class="invoice-toggle">
+        <label><input type="radio" name="invoice-type" value="particulier" checked onchange="toggleInvoiceFields()"><span>Bireysel fatura</span></label>
+        <label><input type="radio" name="invoice-type" value="societe" onchange="toggleInvoiceFields()"><span>Kurumsal fatura</span></label>
+      </div>
+
+      <div id="company-fields">
+        <div class="field-group"><label>Firma unvanı</label><input type="text" id="of-societe"></div>
+        <div class="field-group"><label>Vergi numarası</label><input type="text" id="of-vergi"></div>
+        <div class="vat-note">Kurumsal faturada %20 KDV dahildir.</div>
+      </div>
+
+      <div class="bank-info">
+        <strong>Havale bilgileri</strong>
+        Alıcı : LES BELİERS TEKSTİL LİMİTED ŞİRKETİ<br>
+        IBAN (TL) : TR090020500009490632800001<br>
+        Banka : Kuveyt Türk — Esenyurt Şubesi
+      </div>
+
+      <button type="submit" class="modal-submit">Siparişimi gönder</button>
+    </form>
+  </div>
+</dialog>
+
+<div style="padding:0 6vw 60px; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6;"><a href="https://www.instagram.com/signature.artgallery?igsh=YXd2YW15b2YwanY1" target="_blank" style="border-bottom:1px solid rgba(11,11,12,0.3);">Instagram ↗</a></div>
+
+<script src="../../assets/js/order.js" defer></script>
+</body>
+</html>
