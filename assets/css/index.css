@@ -102,13 +102,10 @@
     to{transform:translateX(-50%);}
   }
   .marquee-item{display:block; flex-shrink:0; width:140px; margin-right:14px;}
-  .marquee-photo{width:140px; height:175px; position:relative; margin-bottom:8px;}
-  .marquee-photo::before{content:""; position:absolute; inset:0;}
-  .mp1::before{background:linear-gradient(135deg,#c9143b,#e2087a 55%,#f5a3c4);}
-  .mp2::before{background:linear-gradient(160deg,#2c3b2e,#556b4f 45%,#c9b79c);}
-  .mp3::before{background:linear-gradient(145deg,#1c2b3d,#3d5a73 50%,#9c3226);}
-  .mp4::before{background:linear-gradient(120deg,#0f4c4c,#1c8c8c 40%,#f2c14e);}
-  .mp5::before{background:linear-gradient(160deg,#3a1c1c,#9c3226 55%,#e2087a);}
+  .marquee-photo{
+    width:140px; height:175px; position:relative; margin-bottom:8px;
+    background-color:#ffffff; background-size:contain; background-position:center; background-repeat:no-repeat;
+  }
   .marquee-price{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--signature); padding-left:2px;}
   summary::-webkit-details-marker{display:none;}
   summary::marker{content:"";}

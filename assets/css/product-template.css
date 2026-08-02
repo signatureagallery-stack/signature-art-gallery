@@ -10,7 +10,10 @@
     padding:20px 6vw 90px; align-items:start;
   }
   @media (max-width:800px){ .product-hero{grid-template-columns:1fr;} }
-  .product-photo{aspect-ratio:4/5; background:linear-gradient(160deg,#c9143b,#e2087a 55%,#f5a3c4);}
+  .product-photo{
+    aspect-ratio:4/5; background-color:#ffffff;
+    background-size:contain; background-position:center; background-repeat:no-repeat;
+  }
 
   .stand-code{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--signature); letter-spacing:1px; display:block; margin-bottom:16px;}
   h1{font-family:'Fraunces',serif; font-weight:500; font-size:clamp(28px,4vw,44px); margin-bottom:8px;}
