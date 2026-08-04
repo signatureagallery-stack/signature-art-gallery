@@ -1,0 +1,47 @@
+backend:
+  name: github
+  repo: VOTRE-COMPTE/signature-art-gallery   # ⚠️ à remplacer par ton vrai compte/dépôt GitHub
+  branch: main
+
+media_folder: "assets/images/boutique"
+public_folder: "assets/images/boutique"
+
+publish_mode: simple
+
+collections:
+  - name: "products"
+    label: "Œuvres (Boutique)"
+    label_singular: "Œuvre"
+    folder: "content/products"
+    create: true
+    delete: true
+    identifier_field: slug
+    slug: "{{slug}}"
+    fields:
+      - { label: "Identifiant (slug, sans espace ni accent)", name: "slug", widget: "string", hint: "ex: nom-artiste-titre" }
+      - { label: "Artiste", name: "artist", widget: "string" }
+      - { label: "Titre de l'œuvre", name: "title", widget: "string" }
+      - { label: "Prix (en TL, ex: 25.000)", name: "price", widget: "string" }
+      - { label: "Dimensions", name: "dimensions", widget: "string" }
+      - { label: "Technique (Français)", name: "technique_fr", widget: "string" }
+      - { label: "Technique (Turc)", name: "technique_tr", widget: "string" }
+      - { label: "Année", name: "year", widget: "string" }
+      - label: "Statut"
+        name: "status"
+        widget: "select"
+        options:
+          - { label: "Disponible", value: "disponible" }
+          - { label: "Vendu", value: "vendu" }
+      - { label: "Photo de l'œuvre", name: "image", widget: "image" }
+      - { label: "Description (Français)", name: "desc_fr", widget: "text" }
+      - { label: "Description (Turc)", name: "desc_tr", widget: "text" }
+
+  - name: "expo"
+    label: "Exposition virtuelle"
+    files:
+      - name: "expo_settings"
+        label: "Réglages de l'exposition"
+        file: "data/expo.json"
+        fields:
+          - { label: "Lien Artsteps (URL complète)", name: "artsteps_url", widget: "string", hint: "Colle ici le lien de ton exposition Artsteps" }
+          - { label: "Titre de l'exposition", name: "title", widget: "string", required: false }
