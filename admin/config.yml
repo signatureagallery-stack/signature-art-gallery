@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: VOTRE-COMPTE/signature-art-gallery   # ⚠️ à remplacer par ton vrai compte/dépôt GitHub
+  repo: signatureagallery-stack/signature-art-gallery
   branch: main
 
 media_folder: "assets/images/boutique"
