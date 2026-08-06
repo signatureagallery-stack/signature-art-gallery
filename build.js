@@ -57,7 +57,7 @@ function productPage(p, lang) {
   const depth = isTR ? '../../' : '../';
   const backHref = '../boutique.html';
   const langSwitchHref = isTR ? `../../produits/${p.slug}.html` : `../tr/produits/${p.slug}.html`;
-  const title = p.title;
+  const title = isTR ? (p.title_tr || p.title) : p.title;
   const artist = p.artist;
   const technique = isTR ? p.technique_tr : p.technique_fr;
   const desc = isTR ? p.desc_tr : p.desc_fr;
@@ -205,13 +205,14 @@ function boutiquePage(products, lang) {
   };
 
   const cards = products.map(p => {
+    const cardTitle = isTR ? (p.title_tr || p.title) : p.title;
     const soldClass = p.status === 'vendu' ? ' sold' : '';
     const tag = p.status === 'vendu' ? `<span class="sold-tag">${t.sold}</span>` : '';
     return `  <a class="product${soldClass}" href="produits/${p.slug}.html">
-    ${tag}<div class="product-photo"><img src="${depth}${p.imageThumb}" alt="${p.title} — ${p.artist}" loading="lazy"></div>
+    ${tag}<div class="product-photo"><img src="${depth}${p.imageThumb}" alt="${cardTitle} — ${p.artist}" loading="lazy"></div>
     <div class="product-info">
       <div class="product-artist">${p.artist}</div>
-      <div class="product-title">${p.title}</div>
+      <div class="product-title">${cardTitle}</div>
       <div class="product-price">${p.price} TL</div>
     </div>
   </a>`;

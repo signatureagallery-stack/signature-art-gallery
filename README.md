@@ -1,72 +1,94 @@
-# Signature Art Gallery — Site web (v2 : boutique data-driven + back-office)
+# Signature Art Gallery — Site web (v3 : back-office maison, sans Decap/OAuth)
 
-## ⚠️ CHANGEMENT IMPORTANT — action requise sur Vercel
+## Ce qui a changé par rapport à la version précédente
 
-Le site a maintenant une **étape de build automatique** (avant, c'était du HTML pur sans transformation). Il faut donc changer un réglage sur Vercel, **une seule fois** :
+Decap CMS et son système OAuth GitHub ont été **entièrement retirés**. À la place : un back-office simple, fait sur mesure, protégé par un mot de passe, qui utilise un unique jeton GitHub côté serveur (pas de connexion GitHub pour toi, pas de popup, pas de Netlify).
 
-1. Va sur ton projet Vercel → **Settings** → **Build & Development Settings**
-2. **Framework Preset** : choisis **"Other"**
-3. **Build Command** : `npm run build`
-4. **Output Directory** : `.` (juste un point)
-5. **Install Command** : `npm install`
-6. Sauvegarde, puis relance un déploiement ("Redeploy" dans l'onglet Deployments)
+**Ce que ça te donne concrètement :**
+- Une page `/admin` protégée par mot de passe
+- Un formulaire : artiste, titre FR, titre TR, description FR, description TR, prix, dimensions, technique, année, statut (disponible/vendu), photo
+- L'image est automatiquement redimensionnée et compressée à l'envoi
+- Une liste des œuvres publiées, avec un bouton "Supprimer"
+- Quand tu publies une œuvre, elle est envoyée directement sur GitHub → Vercel redéploie automatiquement → `build.js` (déjà en place) régénère la boutique FR **et** TR, les fiches produit, tout — sans que tu touches à un seul fichier
 
-Sans ce réglage, la boutique ne se mettra pas à jour automatiquement.
+## ⚠️ Configuration à faire une seule fois (indispensable)
 
-## Ce qui a changé
+Le back-office a besoin de 4 réglages secrets, à ajouter dans Vercel (jamais dans le code, jamais visibles publiquement).
 
-**Avant** : chaque œuvre = une page HTML écrite à la main, dupliquée en FR et en TR → risque d'oubli, de désynchronisation, intenable à 100 œuvres.
+### 1. Créer un jeton d'accès GitHub (remplace complètement l'OAuth)
 
-**Maintenant** : une seule source de données par œuvre (`content/products/*.json`). À chaque déploiement, un script (`build.js`) génère automatiquement :
-- la fiche produit en français (`produits/{slug}.html`)
-- la fiche produit en turc (`tr/produits/{slug}.html`)
-- la grille `boutique.html` (FR) et `tr/boutique.html` (TR)
-- le fil "Nouveautés boutique" sur l'accueil (FR + TR)
-- les images optimisées en WebP + miniatures, dans `assets/images/boutique/optimized/`
+1. Va sur **github.com** → clique sur ta photo de profil (en haut à droite) → **Settings**
+2. Tout en bas du menu de gauche : **Developer settings**
+3. **Personal access tokens** → **Tokens (classic)**
+4. **Generate new token** → **Generate new token (classic)**
+5. Donne-lui un nom (ex: "back-office site")
+6. Coche uniquement la case **`repo`** (accès complet au dépôt)
+7. **Generate token** → **copie immédiatement le jeton affiché** (il ne sera plus jamais visible après)
 
-**Résultat concret** : tu ajoutes une œuvre une seule fois → elle apparaît automatiquement dans les deux langues, partout où elle doit apparaître.
+### 2. Ajouter les 4 variables sur Vercel
 
-## Back-office — ajouter/modifier/supprimer une œuvre
+1. Va sur ton projet Vercel → **Settings** → **Environment Variables**
+2. Ajoute ces 4 variables (Name / Value), une par une, puis clique **Save** à chaque fois :
 
-Un vrai back-office est en place sur `/admin/` (ex: `signatureartgallery.com.tr/admin/`).
+| Name | Value |
+|---|---|
+| `ADMIN_PASSWORD` | Le mot de passe de ton choix pour accéder à `/admin` |
+| `SESSION_SECRET` | N'importe quelle longue chaîne aléatoire (ex: 40 caractères au hasard) |
+| `GITHUB_TOKEN` | Le jeton copié à l'étape précédente |
+| `GITHUB_REPO` | `signatureagallery-stack/signature-art-gallery` (ton compte/dépôt exact) |
+| `GITHUB_BRANCH` | `main` |
 
-**Étape unique à faire pour l'activer** (je ne peux pas la faire à ta place, elle nécessite ton compte GitHub) :
-1. Ouvre `admin/config.yml` et remplace `VOTRE-COMPTE/signature-art-gallery` par le vrai nom de ton compte + dépôt GitHub
-2. Suis la procédure "GitHub OAuth App" de Decap CMS (5-10 min, je peux te guider clic par clic quand tu es prêt) pour autoriser le back-office à se connecter à ton dépôt
-3. Une fois fait, va sur `tonsite.com/admin/`, connecte-toi avec GitHub, et tu verras un formulaire : Artiste, Titre, Prix, Dimensions, Technique, Année, Statut, Photo, Description FR, Description TR
+3. Une fois les 4 ajoutées, va dans **Deployments** → clique sur les **⋯** du dernier déploiement → **Redeploy** (pour que les nouvelles variables soient prises en compte)
 
-Quand tu cliques "Publier" dans le back-office : ça crée automatiquement un commit sur GitHub → Vercel redéploie → le site se met à jour (FR + TR) en 1-2 minutes, sans que tu touches à un seul fichier.
+### 3. Utiliser le back-office
 
-**Tant que cette connexion GitHub n'est pas configurée**, tu peux quand même ajouter une œuvre "à la main" : duplique un fichier dans `content/products/`, remplis les champs, envoie-le sur GitHub comme d'habitude.
+1. Va sur `signatureartgallery.com.tr/admin`
+2. Entre le mot de passe choisi (`ADMIN_PASSWORD`)
+3. Remplis le formulaire, choisis une photo, clique **"Publier l'œuvre"**
+4. Attends 1-2 minutes → l'œuvre apparaît automatiquement dans la boutique FR et TR
 
-## Exposition virtuelle — simplifié à 2 pages
+## Comment ça fonctionne (pour comprendre, pas obligatoire de tout lire)
 
-- **`expo.html`** (+ `tr/expo.html`) — "Voir l'exposition" : affiche le lien Artsteps
-- **`candidature.html`** (+ `tr/candidature.html`) — "Candidater"
+```
+Toi (formulaire /admin)
+   → api/add-artwork.js (redimensionne l'image, écrit sur GitHub via le jeton)
+      → nouveau commit sur GitHub
+         → Vercel détecte le commit, relance automatiquement le build
+            → build.js régénère boutique.html, tr/boutique.html,
+              produits/*.html, tr/produits/*.html
+               → site à jour, FR et TR, sans aucune action manuelle
+```
 
-Pour changer le lien Artsteps : édite `data/expo.json` (le champ `artsteps_url`), ou utilise le back-office (`/admin/` → "Exposition virtuelle"). Aucune modification de code nécessaire.
+Aucun OAuth, aucun popup, aucun compte Netlify : juste un mot de passe côté toi, et un jeton GitHub côté serveur (jamais visible, jamais transmis à ton navigateur).
 
 ## Structure du projet
 
 ```
 website/
-├── content/products/*.json     → UNE SEULE SOURCE par œuvre (FR+TR dans le même fichier)
-├── data/expo.json              → Réglages de l'exposition virtuelle (lien Artsteps)
-├── build.js                    → Génère tout automatiquement (exécuté par Vercel)
-├── package.json / vercel.json  → Configuration du build
-├── admin/                      → Back-office (Decap CMS)
-├── assets/
-│   ├── images/boutique/        → Photos originales des œuvres (UNE SEULE COPIE, partagée FR/TR)
-│   │   └── optimized/          → Générées automatiquement (WebP + miniatures) — ne pas éditer à la main
-│   ├── css/ · js/ · icons/
-├── produits/, tr/produits/     → Générés automatiquement par build.js — ne pas éditer à la main
-├── boutique.html, tr/boutique.html → Générés automatiquement — ne pas éditer à la main
-├── expo.html, tr/expo.html     → Générés automatiquement — ne pas éditer à la main
-├── index.html, tr/index.html   → Pages sources (le bloc "Nouveautés boutique" est auto-régénéré)
-├── about.html, fair-*.html, candidature.html, 404.html → Pages sources classiques
+├── admin/index.html            → Back-office (mot de passe + formulaire + liste)
+├── api/
+│   ├── login.js                → Vérifie le mot de passe, ouvre une session (12h)
+│   ├── add-artwork.js           → Redimensionne l'image + publie sur GitHub
+│   ├── products.js              → Liste / supprime les œuvres
+│   ├── _auth.js                 → Vérification de session (interne)
+│   └── _github.js               → Communication avec l'API GitHub (interne)
+├── content/products/*.json      → Source unique de chaque œuvre (FR+TR)
+├── data/expo.json               → Réglages exposition virtuelle (lien Artsteps)
+├── build.js                     → Génère tout le site à chaque déploiement
+├── package.json / vercel.json   → Configuration du build
+├── assets/images/boutique/      → Photos originales (une seule copie, FR+TR)
+│   └── optimized/               → Générées automatiquement (WebP + miniatures)
+├── produits/, tr/produits/      → Générés automatiquement — ne pas éditer à la main
+├── boutique.html, tr/boutique.html → Générés automatiquement
+├── expo.html, tr/expo.html      → Générés automatiquement
+├── index.html, tr/index.html    → Pages sources (bloc "Nouveautés" auto-régénéré)
 ```
 
-**Règle simple à retenir** : si un fichier peut être régénéré par `build.js`, ne l'édite jamais à la main — édite plutôt sa source dans `content/products/` ou `data/expo.json`, et laisse le build faire le reste.
+## Limites connues (honnêtes)
+
+- **Modifier** une œuvre existante n'est pas encore possible depuis le back-office (seulement ajouter/supprimer). Pour l'instant, une modification se fait en éditant le fichier `content/products/{slug}.json` sur GitHub directement, ou en supprimant puis recréant l'œuvre.
+- Chaque publication déclenche **deux commits** (image + fiche), donc deux redéploiements rapides à la suite — sans impact pratique, juste un détail technique.
+- Le plan gratuit Vercel limite le temps de build et le nombre de déploiements par mois — largement suffisant pour un usage normal (quelques ajouts par semaine), à surveiller seulement si tu publies des dizaines d'œuvres par jour.
 
 ## Traductions appliquées (TR)
 
@@ -77,33 +99,13 @@ website/
 - Vendu → **Satıldı**
 - Retour à la boutique → **Mağazaya Dön**
 
-Le menu français reste inchangé ("Boutique").
+## Exposition virtuelle — 2 pages
 
-## Optimisation (plan gratuit Vercel)
+- `expo.html` (+ `tr/expo.html`) : affiche le lien Artsteps (modifiable via `data/expo.json`)
+- `candidature.html` (+ `tr/candidature.html`) : formulaire de candidature
 
-- Images converties en **WebP** (qualité 80% plein format, 75% miniatures)
-- **Miniatures séparées** (max 400px) pour les grilles, image pleine taille (max 1200px) pour la fiche produit
-- **Lazy loading natif** (`loading="lazy"`) sur toutes les images de la boutique
-- Une seule copie de chaque image, partagée entre FR et TR (pas de duplication)
-- Le tout reste largement dans les limites du plan gratuit Vercel (bande passante, temps de build)
+## Déploiement
 
-## Ajouter une œuvre manuellement (sans back-office, en attendant la connexion GitHub)
-
-1. Copie un fichier existant dans `content/products/`, par exemple `content/products/mon-nouvel-artiste.json`
-2. Remplis les champs (voir un fichier existant comme modèle)
-3. Ajoute la photo dans `assets/images/boutique/`
-4. Envoie les deux fichiers sur GitHub comme d'habitude
-5. Vercel régénère tout automatiquement (boutique FR+TR, fiche produit FR+TR, fil d'accueil)
-
-## Déploiement (Vercel)
-
-1. Connecte ton dépôt GitHub à Vercel (si pas déjà fait)
-2. Configure Build & Development Settings comme indiqué tout en haut de ce document
-3. Chaque `git push` (ou upload GitHub) redéploie automatiquement
-
-## Ce qui reste à faire de ton côté
-
-- [ ] Changer les réglages de build sur Vercel (voir tout en haut)
-- [ ] Remplacer `VOTRE-COMPTE/signature-art-gallery` dans `admin/config.yml` par ton vrai compte GitHub
-- [ ] Configurer l'OAuth GitHub pour activer complètement `/admin/` (je peux te guider)
-- [ ] Coller le lien Artsteps dans `data/expo.json` dès que ton exposition est prête
+1. Dépôt GitHub connecté à Vercel
+2. Build & Development Settings sur Vercel : Framework "Other", Build Command `npm run build`, Output Directory `.`, Install Command `npm install`
+3. Chaque commit (upload GitHub, ou publication via `/admin`) redéploie automatiquement
