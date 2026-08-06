@@ -1,6 +1,6 @@
 // api/add-artwork.js — Reçoit le formulaire (avec image), redimensionne, publie sur GitHub.
 // Le commit déclenche automatiquement un déploiement Vercel qui régénère tout le site (FR+TR).
-const formidable = require('formidable');
+const { formidable } = require('formidable');
 const fs = require('fs');
 const sharp = require('sharp');
 const { isValidSession } = require('./_auth');
