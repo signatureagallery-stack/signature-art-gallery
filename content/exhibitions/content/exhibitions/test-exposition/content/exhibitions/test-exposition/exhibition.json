@@ -1,0 +1,12 @@
+{
+  "slug": "test-exposition",
+  "status": "en_ligne",
+  "title": "Exposition Test",
+  "title_tr": "Test Sergisi",
+  "curatorial_text_fr": "Exposition de test pour validation du module.",
+  "curatorial_text_tr": "Modül doğrulaması için test sergisi.",
+  "date_start": "2026-09-01",
+  "date_end": "2026-09-30",
+  "cover_image": "test.jpg",
+  "artworks": []
+}
