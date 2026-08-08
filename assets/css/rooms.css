@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ==========================================================================
+   rooms.css — Moteur commun de rendu des salles (Module Visualisation 2.5D)
+   ==========================================================================
+   Ce fichier est le socle partagé par les 4 modèles de salle (White Cube,
+   Industrial Loft, Museum Prestige, Contemporary Color Lab).
+
+   Structure :
+   1. Variables et structure générique (angle isométrique, murs, emplacements,
+      socles) — communes aux 4 modèles, ne changent jamais par modèle.
+   2. Un bloc de décor par modèle, ciblé via [data-model="..."] — seul ce
+      qui est propre à l'identité visuelle de chaque modèle vit ici.
+
+   Pour ajouter un modèle plus tard (Industrial Loft, Museum Prestige,
+   Contemporary Color Lab) : ajouter uniquement un nouveau bloc
+   "2.x Modèle : ..." ci-dessous, sans toucher à la section 1 ni aux
+   blocs des autres modèles déjà écrits.
+   ========================================================================== */
+
+:root {
+  --ink: #ffffff;
+  --paper: #0b0b0c;
+  --signature: #e2087a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.back {
+  position: fixed;
+  top: 26px;
+  left: 6vw;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   1. Structure générique — commune aux 4 modèles
+   ========================================================================== */
+
+.room-header {
+  padding: 100px 6vw 30px;
+}
+
+.room-header__model {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 10px;
+}
+
+.room-header h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 44px);
+}
+
+/* La scène isométrique : conteneur générique, le décor de fond (couleur,
+   texture) est appliqué via [data-model] en section 2, jamais ici. */
+.room-scene {
+  padding: 20px 6vw 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 1100px;
+}
+
+.room-wall {
+  border: 1px solid rgba(11, 11, 12, 0.15);
+  padding: 20px;
+}
+
+.room-wall__label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.4;
+  margin-bottom: 14px;
+}
+
+.room-wall__slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 18px;
+}
+
+/* Emplacement vide : générique, identique quel que soit le modèle */
+.room-slot--empty {
+  aspect-ratio: 3 / 4;
+  border: 1px dashed rgba(11, 11, 12, 0.15);
+}
+
+/* Emplacement occupé : structure générique, l'apparence du cadre
+   (ombre, bordure) peut être affinée par modèle en section 2 si besoin */
+.room-slot--filled {
+  display: flex;
+  flex-direction: column;
+}
+
+.room-slot__frame {
+  aspect-ratio: 3 / 4;
+  background-color: #f4f4f4;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 8px;
+}
+
+.room-slot__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.room-slot__title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.room-slot__artist {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+/* Variantes de taille d'affichage — génériques, s'appliquent à tous les
+   modèles de la même façon (Petit / Moyen / Grand ne change jamais de
+   comportement selon le décor, seule l'échelle du cadre varie) */
+.room-slot--filled[data-size="petit"] .room-slot__frame {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.room-slot--filled[data-size="moyen"] .room-slot__frame {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.room-slot--filled[data-size="grand"] .room-slot__frame {
+  width: 100%;
+}
+
+/* Socles — génériques, position exacte gérée par modèle si besoin en
+   section 2 (ex: axe central pour Museum Prestige, angle pour Loft) */
+.room-scene__pedestals {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.room-pedestal {
+  width: 90px;
+  height: 90px;
+  border: 1px dashed var(--signature);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
+}
+
+.room-pedestal--empty {
+  opacity: 0.4;
+}
+
+.room-pedestal__label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+}
+
+/* ==========================================================================
+   2. Décor par modèle — un bloc par modèle, ciblé via [data-model]
+   ========================================================================== */
+
+/* -------- 2.1 Modèle : White Cube -------- */
+.room-scene[data-model="white_cube"] {
+  background: #ffffff;
+}
+.room-scene[data-model="white_cube"] .room-wall {
+  background: #fdfdfd;
+  border-color: rgba(11, 11, 12, 0.12);
+}
+
+/* -------- 2.2 Modèle : Industrial Loft (à venir) -------- */
+/* .room-scene[data-model="industrial_loft"] { ... } */
+
+/* -------- 2.3 Modèle : Museum Prestige (à venir) -------- */
+/* .room-scene[data-model="museum_prestige"] { ... } */
+
+/* -------- 2.4 Modèle : Contemporary Color Lab (à venir) -------- */
+/* .room-scene[data-model="contemporary_color_lab"] { ... } */
+
+@media (max-width: 640px) {
+  .room-header { padding-top: 80px; }
+}
