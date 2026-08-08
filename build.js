@@ -15,6 +15,15 @@ const EXHIBITIONS_DIR = path.join(ROOT, 'content', 'exhibitions');
 const EXHIBITIONS_IMAGES_SRC = path.join(ROOT, 'assets', 'images', 'expositions');
 const EXHIBITIONS_IMAGES_OUT = path.join(EXHIBITIONS_IMAGES_SRC, 'optimized');
 
+// Registre des 4 modèles de salle (Module B) — ajouter une entrée ici
+// suffit à déclarer un nouveau modèle pour le moteur de rendu générique.
+const ROOM_MODELS = {
+  white_cube: { label_fr: 'White Cube', label_tr: 'White Cube' },
+  industrial_loft: { label_fr: 'Industrial Loft', label_tr: 'Industrial Loft' },
+  museum_prestige: { label_fr: 'Museum Prestige', label_tr: 'Museum Prestige' },
+  contemporary_color_lab: { label_fr: 'Contemporary Color Lab', label_tr: 'Contemporary Color Lab' },
+};
+
 // ---------- 1. Charger toutes les œuvres ----------
 function loadProducts() {
   const files = fs.readdirSync(PRODUCTS_DIR).filter(f => f.endsWith('.json'));
@@ -557,6 +566,111 @@ ${artworksBlock}
 `;
 }
 
+// ---------- Salles virtuelles — Chargement (Module B) ----------
+function loadRooms(exhibitionSlug) {
+  const dir = path.join(EXHIBITIONS_DIR, exhibitionSlug, 'rooms');
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+  return files.map(f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8')));
+}
+
+// ---------- Salles virtuelles — Résolution œuvre (pont temporaire vers artworks[]) ----------
+// Tant que artworks/[slug].json n'existe pas encore, on résout une référence
+// de slot.artwork en comparant au nom de fichier (sans extension) du champ
+// "image" déjà présent dans exhibition.artworks[]. Aucune modification de
+// exhibition.json n'est nécessaire pour ce pont.
+function findArtworkByImageSlug(exhibition, artworkRef) {
+  if (!artworkRef) return null;
+  return (exhibition.artworks || []).find(a => {
+    if (!a.image) return false;
+    return path.parse(a.image).name === artworkRef;
+  }) || null;
+}
+
+// ---------- Salles virtuelles — Gabarit générique (Module Visualisation 2.5D) ----------
+// Cette fonction est générique aux 4 modèles : elle ne connaît pas les
+// spécificités visuelles d'un modèle (ça vit dans rooms.css, section 2,
+// via [data-model="..."]) — elle se contente d'itérer sur walls[]/slots[]/
+// pedestals[] tels que fournis par le JSON de la salle. Ajouter les 3
+// autres modèles ne nécessite aucune modification de cette fonction.
+function roomPage(room, exhibition, lang) {
+  const isTR = lang === 'tr';
+  const depth = isTR ? '../../../' : '../../';
+  const backHref = `../${exhibition.slug}.html`;
+  const langSwitchHref = isTR
+    ? `../../../expositions/${exhibition.slug}/${room.slug}.html`
+    : `../../tr/expositions/${exhibition.slug}/${room.slug}.html`;
+  const roomName = isTR ? (room.name_tr || room.name) : room.name;
+  const modelInfo = ROOM_MODELS[room.model] || { label_fr: room.model, label_tr: room.model };
+  const modelLabel = isTR ? modelInfo.label_tr : modelInfo.label_fr;
+
+  const t = {
+    retour: isTR ? '← Sergiye dön' : "← Retour à l'exposition",
+  };
+
+  const wallsHtml = (room.walls || []).map(wall => {
+    const slotsHtml = (wall.slots || []).map(slot => {
+      const artwork = findArtworkByImageSlug(exhibition, slot.artwork);
+      if (!artwork) {
+        return `      <div class="room-slot room-slot--empty" data-slot-id="${slot.slot_id}"></div>`;
+      }
+      const artTitle = isTR ? (artwork.title_tr || artwork.title) : artwork.title;
+      const img = artwork.imageThumb || '';
+      return `      <div class="room-slot room-slot--filled" data-slot-id="${slot.slot_id}" data-size="${slot.display_size || 'moyen'}">
+        <div class="room-slot__frame"${img ? ` style="background-image:url('${depth}${img}')"` : ''}></div>
+        <div class="room-slot__caption">
+          <span class="room-slot__title">${artTitle}</span>
+          <span class="room-slot__artist">${artwork.artist || ''}</span>
+        </div>
+      </div>`;
+    }).join('\n');
+
+    return `    <div class="room-wall" data-wall-id="${wall.wall_id}">
+      <div class="room-wall__label">${wall.wall_id}</div>
+      <div class="room-wall__slots">
+${slotsHtml}
+      </div>
+    </div>`;
+  }).join('\n');
+
+  const pedestalsHtml = (room.pedestals || []).map(ped => {
+    const artwork = findArtworkByImageSlug(exhibition, ped.artwork);
+    const filledClass = artwork ? 'room-pedestal--filled' : 'room-pedestal--empty';
+    const label = artwork ? (isTR ? (artwork.title_tr || artwork.title) : artwork.title) : '';
+    return `    <div class="room-pedestal ${filledClass}" data-pedestal-id="${ped.pedestal_id}">${label ? `<span class="room-pedestal__label">${label}</span>` : ''}</div>`;
+  }).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="${depth}assets/icons/favicon.ico" sizes="any"><link rel="icon" href="${depth}assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="${depth}assets/icons/apple-touch-icon.png">
+<title>${roomName} — Signature Art Gallery</title>
+<link rel="stylesheet" href="${depth}assets/css/rooms.css">
+</head>
+<body>
+
+<a class="back" href="${backHref}">${t.retour}</a>
+<a href="${langSwitchHref}" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">${isTR ? 'FR' : 'TR'}</a>
+
+<section class="room-header">
+  <span class="room-header__model">${modelLabel}</span>
+  <h1>${roomName}</h1>
+</section>
+
+<section class="room-scene" data-model="${room.model}">
+${wallsHtml}
+  <div class="room-scene__pedestals">
+${pedestalsHtml}
+  </div>
+</section>
+
+</body>
+</html>
+`;
+}
+
 // ---------- 4. Exécution ----------
 async function main() {
   console.log('→ Chargement des œuvres...');
@@ -619,6 +733,21 @@ async function main() {
   if (!fs.existsSync(trExpositionsDir)) fs.mkdirSync(trExpositionsDir, { recursive: true });
   for (const exh of publicExhibitions) {
     fs.writeFileSync(path.join(trExpositionsDir, `${exh.slug}.html`), exhibitionPage(exh, 'tr'), 'utf-8');
+  }
+
+  console.log('→ Génération des salles (Module Visualisation 2.5D)...');
+  for (const exh of publicExhibitions) {
+    const rooms = loadRooms(exh.slug);
+    if (rooms.length === 0) continue;
+    const roomsOutDirFr = path.join(ROOT, 'expositions', exh.slug);
+    const roomsOutDirTr = path.join(ROOT, 'tr', 'expositions', exh.slug);
+    if (!fs.existsSync(roomsOutDirFr)) fs.mkdirSync(roomsOutDirFr, { recursive: true });
+    if (!fs.existsSync(roomsOutDirTr)) fs.mkdirSync(roomsOutDirTr, { recursive: true });
+    for (const room of rooms) {
+      fs.writeFileSync(path.join(roomsOutDirFr, `${room.slug}.html`), roomPage(room, exh, 'fr'), 'utf-8');
+      fs.writeFileSync(path.join(roomsOutDirTr, `${room.slug}.html`), roomPage(room, exh, 'tr'), 'utf-8');
+    }
+    console.log(`  ${rooms.length} salle(s) générée(s) pour "${exh.slug}"`);
   }
 
   console.log('✓ Build terminé.');
