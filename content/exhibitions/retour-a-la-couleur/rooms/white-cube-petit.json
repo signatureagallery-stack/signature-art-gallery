@@ -1,0 +1,48 @@
+{
+  "slug": "white-cube-petit",
+  "name": "White Cube – Petit",
+  "name_tr": "White Cube – Küçük",
+  "model": "white_cube",
+  "accent_color": null,
+  "walls": [
+    {
+      "wall_id": "nord",
+      "slots": [
+        { "slot_id": "1", "artwork": "retour-a-la-couleur-01", "display_size": "moyen" },
+        { "slot_id": "2", "artwork": "retour-a-la-couleur-02", "display_size": "moyen" },
+        { "slot_id": "3", "artwork": "retour-a-la-couleur-03", "display_size": "grand" },
+        { "slot_id": "4", "artwork": null, "display_size": "moyen" }
+      ]
+    },
+    {
+      "wall_id": "sud",
+      "slots": [
+        { "slot_id": "1", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "2", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "3", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "4", "artwork": null, "display_size": "moyen" }
+      ]
+    },
+    {
+      "wall_id": "est",
+      "slots": [
+        { "slot_id": "1", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "2", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "3", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "4", "artwork": null, "display_size": "moyen" }
+      ]
+    },
+    {
+      "wall_id": "ouest",
+      "slots": [
+        { "slot_id": "1", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "2", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "3", "artwork": null, "display_size": "moyen" },
+        { "slot_id": "4", "artwork": null, "display_size": "moyen" }
+      ]
+    }
+  ],
+  "pedestals": [
+    { "pedestal_id": "centre", "artwork": null }
+  ]
+}
