@@ -184,6 +184,102 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
 }
 
+/* --------------------------------------------------------------------------
+   Vue isométrique (sol en losange + 2 murs adjacents en trapèze)
+   Géométrie générique commune aux 4 modèles — reprend exactement les
+   coordonnées des maquettes déjà validées (repère 340×260). Seules les
+   couleurs/textures changent par modèle, en section 2 ci-dessous.
+   -------------------------------------------------------------------------- */
+
+.room-isometric {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 340 / 260;
+  margin: 0 auto 20px;
+}
+
+.room-isometric__wall {
+  position: absolute;
+  top: 28.8%;
+  width: 26.5%;
+  height: 63.5%;
+  border: 1px solid rgba(11, 11, 12, 0.15);
+}
+
+.room-isometric__wall--left {
+  left: 23.5%;
+  clip-path: polygon(0% 72.7%, 100% 100%, 100% 27.3%, 0% 0%);
+}
+
+.room-isometric__wall--right {
+  left: 50%;
+  clip-path: polygon(0% 100%, 100% 72.7%, 100% 0%, 0% 27.3%);
+}
+
+.room-isometric__floor {
+  position: absolute;
+  left: 23.5%;
+  top: 57.7%;
+  width: 52.9%;
+  height: 34.6%;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: #f1efe9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.room-isometric__wall-label {
+  position: absolute;
+  top: 23%;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.45;
+}
+.room-isometric__wall-label--left { left: 30%; }
+.room-isometric__wall-label--right { left: 63%; }
+
+/* Marqueurs d'emplacement dans la vue isométrique — 4 positions fixes
+   par mur, reprises des maquettes déjà validées. Purement indicatifs
+   (pas de photo ici, pour ne jamais déformer une œuvre dans un trapèze
+   incliné) — les vraies vignettes restent dans la liste détaillée
+   ci-dessous, en rectangle non déformé. */
+.room-isometric__marker {
+  position: absolute;
+  border: 1px solid rgba(11, 11, 12, 0.3);
+}
+.room-isometric__marker--filled {
+  background: rgba(226, 8, 122, 0.12);
+  border-color: var(--signature);
+}
+.room-isometric__marker--empty {
+  border-style: dashed;
+  opacity: 0.5;
+}
+
+.room-isometric__wall--left .room-isometric__marker:nth-child(1) { left: 14.4%; top: 42.4%; width: 20%; height: 14.5%; }
+.room-isometric__wall--left .room-isometric__marker:nth-child(2) { left: 36.7%; top: 48.5%; width: 20%; height: 14.5%; }
+.room-isometric__wall--left .room-isometric__marker:nth-child(3) { left: 14.4%; top: 18.2%; width: 20%; height: 14.5%; }
+.room-isometric__wall--left .room-isometric__marker:nth-child(4) { left: 36.7%; top: 24.2%; width: 20%; height: 14.5%; }
+
+.room-isometric__wall--right .room-isometric__marker:nth-child(1) { left: 33.3%; top: 48.5%; width: 20%; height: 14.5%; }
+.room-isometric__wall--right .room-isometric__marker:nth-child(2) { left: 55.6%; top: 42.4%; width: 20%; height: 14.5%; }
+.room-isometric__wall--right .room-isometric__marker:nth-child(3) { left: 33.3%; top: 24.2%; width: 20%; height: 14.5%; }
+.room-isometric__wall--right .room-isometric__marker:nth-child(4) { left: 55.6%; top: 18.2%; width: 20%; height: 14.5%; }
+
+.room-isometric__pedestal {
+  width: 18%;
+  aspect-ratio: 1;
+  border: 1px dashed var(--signature);
+  transform: rotate(45deg);
+}
+.room-isometric__pedestal--filled {
+  background: rgba(226, 8, 122, 0.15);
+}
+
 /* ==========================================================================
    2. Décor par modèle — un bloc par modèle, ciblé via [data-model]
    ========================================================================== */
@@ -195,6 +291,15 @@ a { color: inherit; text-decoration: none; }
 .room-scene[data-model="white_cube"] .room-wall {
   background: #fdfdfd;
   border-color: rgba(11, 11, 12, 0.12);
+}
+.room-isometric[data-model="white_cube"] .room-isometric__wall {
+  background: #ffffff;
+}
+.room-isometric[data-model="white_cube"] .room-isometric__wall--left {
+  background: #f7f7f6; /* légèrement plus sombre pour suggérer l'ombre portée du coin */
+}
+.room-isometric[data-model="white_cube"] .room-isometric__floor {
+  background: #efeeea;
 }
 
 /* -------- 2.2 Modèle : Industrial Loft (à venir) -------- */
