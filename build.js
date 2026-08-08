@@ -17,11 +17,14 @@ const EXHIBITIONS_IMAGES_OUT = path.join(EXHIBITIONS_IMAGES_SRC, 'optimized');
 
 // Registre des 4 modèles de salle (Module B) — ajouter une entrée ici
 // suffit à déclarer un nouveau modèle pour le moteur de rendu générique.
+// "primary_walls" désigne les 2 murs adjacents affichés dans la vue
+// isométrique (le "coin" de salle visible) — les autres murs restent
+// consultables dans la liste détaillée en dessous.
 const ROOM_MODELS = {
-  white_cube: { label_fr: 'White Cube', label_tr: 'White Cube' },
-  industrial_loft: { label_fr: 'Industrial Loft', label_tr: 'Industrial Loft' },
-  museum_prestige: { label_fr: 'Museum Prestige', label_tr: 'Museum Prestige' },
-  contemporary_color_lab: { label_fr: 'Contemporary Color Lab', label_tr: 'Contemporary Color Lab' },
+  white_cube: { label_fr: 'White Cube', label_tr: 'White Cube', primary_walls: ['nord', 'est'] },
+  industrial_loft: { label_fr: 'Industrial Loft', label_tr: 'Industrial Loft', primary_walls: [] },
+  museum_prestige: { label_fr: 'Museum Prestige', label_tr: 'Museum Prestige', primary_walls: [] },
+  contemporary_color_lab: { label_fr: 'Contemporary Color Lab', label_tr: 'Contemporary Color Lab', primary_walls: [] },
 };
 
 // ---------- 1. Charger toutes les œuvres ----------
@@ -587,6 +590,39 @@ function findArtworkByImageSlug(exhibition, artworkRef) {
   }) || null;
 }
 
+// ---------- Salles virtuelles — Vue isométrique (sol + 2 murs adjacents) ----------
+// Générique : ne connaît que walls[].wall_id et slots[].artwork. Le choix
+// des 2 murs affichés vient de ROOM_MODELS[model].primary_walls (repli
+// automatique sur les 2 premiers murs si non configuré pour un modèle).
+function buildIsometricHero(room) {
+  const modelInfo = ROOM_MODELS[room.model] || {};
+  const configured = modelInfo.primary_walls || [];
+  const primaryIds = configured.length >= 2 ? configured.slice(0, 2) : (room.walls || []).slice(0, 2).map(w => w.wall_id);
+
+  const wallsById = {};
+  (room.walls || []).forEach(w => { wallsById[w.wall_id] = w; });
+  const leftWall = wallsById[primaryIds[0]];
+  const rightWall = wallsById[primaryIds[1]];
+  if (!leftWall || !rightWall) return ''; // pas assez de murs pour construire la vue, dégradation propre
+
+  const markers = (wall) => (wall.slots || []).map(slot => {
+    const filled = !!slot.artwork;
+    return `<span class="room-isometric__marker ${filled ? 'room-isometric__marker--filled' : 'room-isometric__marker--empty'}"></span>`;
+  }).join('');
+
+  const pedestal = (room.pedestals && room.pedestals.length)
+    ? `<div class="room-isometric__pedestal${room.pedestals.some(p => p.artwork) ? ' room-isometric__pedestal--filled' : ''}"></div>`
+    : '';
+
+  return `  <div class="room-isometric" data-model="${room.model}">
+    <div class="room-isometric__wall room-isometric__wall--left" data-wall-id="${leftWall.wall_id}">${markers(leftWall)}</div>
+    <span class="room-isometric__wall-label room-isometric__wall-label--left">${leftWall.wall_id}</span>
+    <div class="room-isometric__wall room-isometric__wall--right" data-wall-id="${rightWall.wall_id}">${markers(rightWall)}</div>
+    <span class="room-isometric__wall-label room-isometric__wall-label--right">${rightWall.wall_id}</span>
+    <div class="room-isometric__floor">${pedestal}</div>
+  </div>`;
+}
+
 // ---------- Salles virtuelles — Gabarit générique (Module Visualisation 2.5D) ----------
 // Cette fonction est générique aux 4 modèles : elle ne connaît pas les
 // spécificités visuelles d'un modèle (ça vit dans rooms.css, section 2,
@@ -658,6 +694,8 @@ ${slotsHtml}
   <span class="room-header__model">${modelLabel}</span>
   <h1>${roomName}</h1>
 </section>
+
+${buildIsometricHero(room)}
 
 <section class="room-scene" data-model="${room.model}">
 ${wallsHtml}
