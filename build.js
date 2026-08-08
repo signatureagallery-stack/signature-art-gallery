@@ -497,9 +497,9 @@ function exhibitionIndexPage(exhibitions, lang) {
 // ---------- Expositions virtuelles — Gabarit : Page exposition (Module A) ----------
 function exhibitionPage(exh, lang) {
   const isTR = lang === 'tr';
-  const depth = isTR ? '../' : '';
-  const backHref = isTR ? '../expositions.html' : 'expositions.html';
-  const langSwitchHref = isTR ? `../../expositions/${exh.slug}.html` : `tr/expositions/${exh.slug}.html`;
+  const depth = isTR ? '../../' : '../';
+  const backHref = '../expositions.html';
+  const langSwitchHref = isTR ? `../../expositions/${exh.slug}.html` : `../tr/expositions/${exh.slug}.html`;
   const title = isTR ? (exh.title_tr || exh.title) : exh.title;
   const curatorialText = isTR ? exh.curatorial_text_tr : exh.curatorial_text_fr;
 
