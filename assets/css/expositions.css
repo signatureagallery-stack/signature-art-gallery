@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink: #ffffff;
+  --paper: #0b0b0c;
+  --signature: #e2087a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.back {
+  position: fixed;
+  top: 26px;
+  left: 6vw;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  z-index: 10;
+}
+
+.stand-code {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 12px;
+}
+
+.hero, .exhibition-hero {
+  padding: 100px 6vw 40px;
+  max-width: 900px;
+}
+
+.hero h1, .exhibition-hero h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(32px, 5vw, 52px);
+}
+
+.section {
+  padding: 20px 6vw 60px;
+}
+
+/* --- Index des expositions --- */
+
+.exhibitions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+}
+
+.exhibition-card {
+  display: block;
+  border: 1px solid rgba(11, 11, 12, 0.15);
+  transition: opacity 0.2s ease;
+}
+
+.exhibition-card:hover { opacity: 0.85; }
+
+.exhibition-card__image {
+  aspect-ratio: 4 / 3;
+  background-color: #f4f4f4;
+  background-size: cover;
+  background-position: center;
+}
+
+.exhibition-card__body { padding: 18px; }
+
+.exhibition-card__status {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border: 1px solid var(--signature);
+  color: var(--signature);
+  margin-bottom: 10px;
+}
+
+.exhibition-card__status--archivee {
+  border-color: rgba(11, 11, 12, 0.3);
+  color: rgba(11, 11, 12, 0.5);
+}
+
+.exhibition-card__title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.exhibition-card__dates {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+.exhibitions-empty {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  opacity: 0.5;
+  padding: 20px 0;
+}
+
+/* --- Page d'une exposition --- */
+
+.exhibition-hero__dates {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  opacity: 0.5;
+  margin: 10px 0 24px;
+}
+
+.exhibition-hero__text {
+  font-size: 16px;
+  line-height: 1.75;
+  opacity: 0.85;
+  max-width: 640px;
+}
+
+.artworks-heading {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 24px;
+  border-top: 1px solid rgba(11, 11, 12, 0.15);
+  padding-top: 24px;
+}
+
+.artworks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 28px;
+  max-width: 1200px;
+}
+
+.artwork-item__image {
+  aspect-ratio: 3 / 4;
+  background-color: #f4f4f4;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 10px;
+}
+
+.artwork-item__title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.artwork-item__artist {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+@media (max-width: 640px) {
+  .hero, .exhibition-hero { padding-top: 80px; }
+}
