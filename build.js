@@ -11,6 +11,9 @@ const PRODUCTS_DIR = path.join(ROOT, 'content', 'products');
 const IMAGES_SRC = path.join(ROOT, 'assets', 'images', 'boutique');
 const IMAGES_OUT = path.join(ROOT, 'assets', 'images', 'boutique', 'optimized');
 const EXPO_FILE = path.join(ROOT, 'data', 'expo.json');
+const EXHIBITIONS_DIR = path.join(ROOT, 'content', 'exhibitions');
+const EXHIBITIONS_IMAGES_SRC = path.join(ROOT, 'assets', 'images', 'expositions');
+const EXHIBITIONS_IMAGES_OUT = path.join(EXHIBITIONS_IMAGES_SRC, 'optimized');
 
 // ---------- 1. Charger toutes les œuvres ----------
 function loadProducts() {
@@ -361,6 +364,199 @@ function expoPage(expo, lang) {
 `;
 }
 
+// ---------- Expositions virtuelles — Chargement (Module A) ----------
+function loadExhibitions() {
+  if (!fs.existsSync(EXHIBITIONS_DIR)) return [];
+  const dirs = fs.readdirSync(EXHIBITIONS_DIR).filter(d =>
+    fs.statSync(path.join(EXHIBITIONS_DIR, d)).isDirectory()
+  );
+  const exhibitions = dirs
+    .map(dir => {
+      const filePath = path.join(EXHIBITIONS_DIR, dir, 'exhibition.json');
+      if (!fs.existsSync(filePath)) return null;
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    })
+    .filter(Boolean);
+
+  // Tri par date de début décroissante (les plus récentes en premier)
+  exhibitions.sort((a, b) => new Date(b.date_start) - new Date(a.date_start));
+  return exhibitions;
+}
+
+// ---------- Expositions virtuelles — Optimisation des images ----------
+async function optimizeExhibitionImages(exhibitions) {
+  if (!fs.existsSync(EXHIBITIONS_IMAGES_OUT)) fs.mkdirSync(EXHIBITIONS_IMAGES_OUT, { recursive: true });
+
+  async function optimizeOne(imageName, warnLabel) {
+    if (!imageName) return null;
+    const srcPath = path.join(EXHIBITIONS_IMAGES_SRC, imageName);
+    if (!fs.existsSync(srcPath)) {
+      console.warn(`⚠️  Image manquante pour ${warnLabel}: ${imageName}`);
+      return null;
+    }
+    const base = path.parse(imageName).name;
+    const fullOut = path.join(EXHIBITIONS_IMAGES_OUT, `${base}.webp`);
+    const thumbOut = path.join(EXHIBITIONS_IMAGES_OUT, `${base}-thumb.webp`);
+
+    await sharp(srcPath).resize({ width: 1200, withoutEnlargement: true }).webp({ quality: 80 }).toFile(fullOut);
+    await sharp(srcPath).resize({ width: 400, withoutEnlargement: true }).webp({ quality: 75 }).toFile(thumbOut);
+
+    return {
+      full: `assets/images/expositions/optimized/${base}.webp`,
+      thumb: `assets/images/expositions/optimized/${base}-thumb.webp`,
+    };
+  }
+
+  for (const exh of exhibitions) {
+    const cover = await optimizeOne(exh.cover_image, exh.slug);
+    exh.coverFull = cover ? cover.full : null;
+    exh.coverThumb = cover ? cover.thumb : null;
+
+    for (const art of exh.artworks || []) {
+      const img = await optimizeOne(art.image, `${exh.slug} / ${art.title}`);
+      art.imageFull = img ? img.full : null;
+      art.imageThumb = img ? img.thumb : null;
+    }
+  }
+}
+
+// ---------- Expositions virtuelles — Gabarit : Index (Module G) ----------
+function exhibitionIndexPage(exhibitions, lang) {
+  const isTR = lang === 'tr';
+  const depth = isTR ? '../' : '';
+  const backHref = 'index.html';
+  const langSwitchHref = isTR ? '../expositions.html' : 'tr/expositions.html';
+
+  const t = {
+    title: isTR ? 'Sergiler' : 'Expositions',
+    heading: isTR ? 'Sanal Sergiler' : 'Expositions virtuelles',
+    retour: isTR ? '← Geri' : '← Retour',
+    instagram: 'Instagram ↗',
+    archived: isTR ? 'Geçmiş' : 'Passée',
+    ongoing: isTR ? 'Devam Ediyor' : 'En cours',
+    no_exhibitions: isTR ? 'Şu anda sergi bulunmuyor.' : 'Aucune exposition pour le moment.',
+  };
+
+  // Seules les expositions publiées apparaissent sur le site public (jamais les brouillons)
+  const publicExhibitions = exhibitions.filter(e => e.status !== 'brouillon');
+
+  const statusLabel = (status) => {
+    if (status === 'archivee') return t.archived;
+    return t.ongoing;
+  };
+
+  const cards = publicExhibitions.map(exh => {
+    const title = isTR ? (exh.title_tr || exh.title) : exh.title;
+    const dates = `${exh.date_start} — ${exh.date_end}`;
+    const href = `expositions/${exh.slug}.html`;
+    const cover = exh.coverThumb || '';
+    return `  <a class="exhibition-card" href="${href}">
+    <div class="exhibition-card__image"${cover ? ` style="background-image:url('${depth}${cover}')"` : ''}></div>
+    <div class="exhibition-card__body">
+      <span class="exhibition-card__status exhibition-card__status--${exh.status}">${statusLabel(exh.status)}</span>
+      <div class="exhibition-card__title">${title}</div>
+      <div class="exhibition-card__dates">${dates}</div>
+    </div>
+  </a>`;
+  }).join('\n');
+
+  const gridOrEmpty = publicExhibitions.length
+    ? `<div class="exhibitions-grid">\n${cards}\n</div>`
+    : `<div class="exhibitions-empty">${t.no_exhibitions}</div>`;
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="${depth}assets/icons/favicon.ico" sizes="any"><link rel="icon" href="${depth}assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="${depth}assets/icons/apple-touch-icon.png">
+<title>${t.title} — Signature Art Gallery</title>
+<link rel="stylesheet" href="${depth}assets/css/expositions.css">
+</head>
+<body>
+
+<a class="back" href="${backHref}">${t.retour}</a>
+<a href="${langSwitchHref}" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">${isTR ? 'FR' : 'TR'}</a>
+
+<section class="hero">
+  <span class="stand-code">${t.title}</span>
+  <h1>${t.heading}</h1>
+</section>
+
+<section class="section">
+  ${gridOrEmpty}
+</section>
+
+<div style="padding:0 6vw 60px; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6;"><a href="https://www.instagram.com/signature.artgallery?igsh=YXd2YW15b2YwanY1" target="_blank" style="border-bottom:1px solid rgba(11,11,12,0.3);">${t.instagram}</a></div>
+
+</body>
+</html>
+`;
+}
+
+// ---------- Expositions virtuelles — Gabarit : Page exposition (Module A) ----------
+function exhibitionPage(exh, lang) {
+  const isTR = lang === 'tr';
+  const depth = isTR ? '../' : '';
+  const backHref = isTR ? '../expositions.html' : 'expositions.html';
+  const langSwitchHref = isTR ? `../../expositions/${exh.slug}.html` : `tr/expositions/${exh.slug}.html`;
+  const title = isTR ? (exh.title_tr || exh.title) : exh.title;
+  const curatorialText = isTR ? exh.curatorial_text_tr : exh.curatorial_text_fr;
+
+  const t = {
+    retour: isTR ? '← Sergilere dön' : '← Retour aux expositions',
+    dates_sep: '—',
+    artworks_heading: isTR ? 'Sergilenen Eserler' : 'Œuvres présentées',
+    instagram: 'Instagram ↗',
+    par: isTR ? '' : 'Par ',
+  };
+
+  const artworksBlock = (exh.artworks || []).map(art => {
+    const artTitle = isTR ? (art.title_tr || art.title) : art.title;
+    const img = art.imageThumb || '';
+    return `    <figure class="artwork-item">
+      <div class="artwork-item__image"${img ? ` style="background-image:url('${depth}${img}')"` : ''}></div>
+      <figcaption>
+        <div class="artwork-item__title">${artTitle}</div>
+        <div class="artwork-item__artist">${t.par}${art.artist}</div>
+      </figcaption>
+    </figure>`;
+  }).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="${depth}assets/icons/favicon.ico" sizes="any"><link rel="icon" href="${depth}assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="${depth}assets/icons/apple-touch-icon.png">
+<title>${title} — Signature Art Gallery</title>
+<link rel="stylesheet" href="${depth}assets/css/expositions.css">
+</head>
+<body>
+
+<a class="back" href="${backHref}">${t.retour}</a>
+<a href="${langSwitchHref}" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">${isTR ? 'FR' : 'TR'}</a>
+
+<section class="exhibition-hero">
+  <h1>${title}</h1>
+  <div class="exhibition-hero__dates">${exh.date_start} ${t.dates_sep} ${exh.date_end}</div>
+  <p class="exhibition-hero__text">${curatorialText}</p>
+</section>
+
+<section class="section">
+  <div class="artworks-heading">${t.artworks_heading}</div>
+  <div class="artworks-grid">
+${artworksBlock}
+  </div>
+</section>
+
+<div style="padding:0 6vw 60px; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6;"><a href="https://www.instagram.com/signature.artgallery?igsh=YXd2YW15b2YwanY1" target="_blank" style="border-bottom:1px solid rgba(11,11,12,0.3);">${t.instagram}</a></div>
+
+</body>
+</html>
+`;
+}
+
 // ---------- 4. Exécution ----------
 async function main() {
   console.log('→ Chargement des œuvres...');
@@ -397,6 +593,33 @@ async function main() {
   const expo = loadExpo();
   fs.writeFileSync(path.join(ROOT, 'expo.html'), expoPage(expo, 'fr'), 'utf-8');
   fs.writeFileSync(path.join(ROOT, 'tr', 'expo.html'), expoPage(expo, 'tr'), 'utf-8');
+
+  console.log('→ Chargement des expositions...');
+  const exhibitions = loadExhibitions();
+  console.log(`  ${exhibitions.length} exposition(s) trouvée(s)`);
+
+  console.log('→ Optimisation des images des expositions...');
+  await optimizeExhibitionImages(exhibitions);
+
+  console.log('→ Génération expositions.html (FR)...');
+  fs.writeFileSync(path.join(ROOT, 'expositions.html'), exhibitionIndexPage(exhibitions, 'fr'), 'utf-8');
+
+  console.log('→ Génération tr/expositions.html (TR)...');
+  fs.writeFileSync(path.join(ROOT, 'tr', 'expositions.html'), exhibitionIndexPage(exhibitions, 'tr'), 'utf-8');
+
+  console.log('→ Génération des pages exposition (FR)...');
+  const publicExhibitions = exhibitions.filter(e => e.status !== 'brouillon');
+  if (!fs.existsSync(path.join(ROOT, 'expositions'))) fs.mkdirSync(path.join(ROOT, 'expositions'));
+  for (const exh of publicExhibitions) {
+    fs.writeFileSync(path.join(ROOT, 'expositions', `${exh.slug}.html`), exhibitionPage(exh, 'fr'), 'utf-8');
+  }
+
+  console.log('→ Génération des pages exposition (TR)...');
+  const trExpositionsDir = path.join(ROOT, 'tr', 'expositions');
+  if (!fs.existsSync(trExpositionsDir)) fs.mkdirSync(trExpositionsDir, { recursive: true });
+  for (const exh of publicExhibitions) {
+    fs.writeFileSync(path.join(trExpositionsDir, `${exh.slug}.html`), exhibitionPage(exh, 'tr'), 'utf-8');
+  }
 
   console.log('✓ Build terminé.');
 }
