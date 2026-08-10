@@ -29,6 +29,10 @@ async function handler(req, res) {
 
     const title = get('title');
     const titleTr = get('title_tr') || title;
+    const artists = get('artists')
+      .split(',')
+      .map((a) => a.trim())
+      .filter(Boolean);
     const dateStart = get('date_start');
     const dateEnd = get('date_end');
     const status = ['brouillon', 'en_ligne', 'archivee'].includes(get('status')) ? get('status') : 'brouillon';
@@ -86,6 +90,7 @@ async function handler(req, res) {
       status,
       title,
       title_tr: titleTr,
+      artists,
       curatorial_text_fr: curatorialFr,
       curatorial_text_tr: curatorialTr,
       date_start: dateStart,
