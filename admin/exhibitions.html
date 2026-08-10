@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back-office — Expositions — Signature Art Gallery</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  :root{--ink:#ffffff; --paper:#0b0b0c; --signature:#e2087a;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-weight:300; padding:40px 6vw 100px;}
+  h1{font-family:'Fraunces',serif; font-weight:500; font-size:32px; margin-bottom:8px;}
+  .subtitle{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.5; letter-spacing:0.5px; margin-bottom:40px;}
+
+  #login-view{max-width:360px; margin:80px auto;}
+  #login-view h1{text-align:center;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.6; margin-bottom:6px;}
+  .field input, .field textarea, .field select{
+    width:100%; padding:12px 14px; border:1px solid rgba(11,11,12,0.2); font-family:'Inter',sans-serif; font-size:14px; background:#fff; color:var(--paper);
+  }
+  .field textarea{resize:vertical;}
+  .hint{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.45; margin-top:4px;}
+  button{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    background:var(--signature); color:#fff; border:none; padding:14px 24px; cursor:pointer;
+  }
+  button:disabled{opacity:0.5; cursor:default;}
+  .error-msg{color:#b3261e; font-size:13px; margin-top:10px;}
+  .success-msg{color:#1a7a3c; font-size:13px; margin-top:10px;}
+
+  #app-view{display:none; max-width:720px; margin:0 auto;}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .form-box{border:1px solid rgba(11,11,12,0.15); padding:32px;}
+  .form-box h2{font-family:'Fraunces',serif; font-size:22px; margin-bottom:6px;}
+  .form-box .step-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-bottom:24px; display:block;}
+
+  #logout-link{position:fixed; top:24px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6; cursor:pointer;}
+  .back-link{display:inline-block; margin-bottom:24px; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6;}
+</style>
+</head>
+<body>
+
+<div id="login-view">
+  <h1>Back-office</h1>
+  <div class="field">
+    <label>Mot de passe</label>
+    <input type="password" id="password-input" autofocus>
+  </div>
+  <button id="login-btn" style="width:100%;">Se connecter</button>
+  <div id="login-error" class="error-msg"></div>
+</div>
+
+<div id="app-view">
+  <span id="logout-link" onclick="logout()">Se déconnecter</span>
+  <a class="back-link" href="/admin/">&larr; Retour au back-office</a>
+  <h1>Expositions</h1>
+  <div class="subtitle">Back-office — Étape 1 : créer une exposition</div>
+
+  <div class="form-box">
+    <span class="step-tag">Étape 1 / — Créer une exposition</span>
+    <h2>Nouvelle exposition</h2>
+    <form id="create-form">
+      <div class="field"><label>Titre (Français) *</label><input type="text" name="title" required></div>
+      <div class="field"><label>Titre (Turc)</label><input type="text" name="title_tr" placeholder="si vide = même que FR"></div>
+
+      <div class="grid-2">
+        <div class="field"><label>Date de début *</label><input type="date" name="date_start" required></div>
+        <div class="field"><label>Date de fin *</label><input type="date" name="date_end" required></div>
+      </div>
+
+      <div class="field">
+        <label>Statut</label>
+        <select name="status">
+          <option value="brouillon">Brouillon</option>
+          <option value="en_ligne">En ligne</option>
+          <option value="archivee">Archivée</option>
+        </select>
+      </div>
+
+      <div class="field"><label>Texte curatorial (Français)</label><textarea name="curatorial_text_fr" rows="4"></textarea></div>
+      <div class="field"><label>Texte curatorial (Turc)</label><textarea name="curatorial_text_tr" rows="4"></textarea></div>
+
+      <div class="field">
+        <label>Image de couverture *</label>
+        <input type="file" name="cover_image" accept="image/*" required>
+        <div class="hint">Optimisée automatiquement au prochain déploiement (WebP + miniature).</div>
+      </div>
+
+      <button type="submit" id="submit-btn">Créer l'exposition</button>
+      <div id="create-error" class="error-msg"></div>
+      <div id="create-success" class="success-msg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  async function checkSession() {
+    const r = await fetch('/api/products'); // vérification de session générique, réutilise l'endpoint existant
+    if (r.status === 200) showApp();
+  }
+
+  function showApp() {
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('app-view').style.display = 'block';
+  }
+
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const password = document.getElementById('password-input').value;
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (r.ok) {
+      showApp();
+    } else {
+      errEl.textContent = 'Mot de passe incorrect.';
+    }
+  });
+
+  document.getElementById('password-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-btn').click();
+  });
+
+  function logout() {
+    document.cookie = 'sag_session=; Max-Age=0; Path=/;';
+    location.reload();
+  }
+
+  document.getElementById('create-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const errEl = document.getElementById('create-error');
+    const okEl = document.getElementById('create-success');
+    errEl.textContent = '';
+    okEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Création en cours…';
+
+    const formData = new FormData(e.target);
+    try {
+      const r = await fetch('/api/add-exhibition', { method: 'POST', body: formData });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Erreur inconnue');
+      okEl.textContent = "Exposition créée ! Le site se met à jour automatiquement (1-2 minutes).";
+      e.target.reset();
+    } catch (err) {
+      errEl.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Créer l'exposition";
+    }
+  });
+
+  checkSession();
+</script>
+
+</body>
+</html>
