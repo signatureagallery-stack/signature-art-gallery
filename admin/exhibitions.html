@@ -1,168 +1,146 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Back-office — Expositions — Signature Art Gallery</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
-  :root{--ink:#ffffff; --paper:#0b0b0c; --signature:#e2087a;}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-weight:300; padding:40px 6vw 100px;}
-  h1{font-family:'Fraunces',serif; font-weight:500; font-size:32px; margin-bottom:8px;}
-  .subtitle{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.5; letter-spacing:0.5px; margin-bottom:40px;}
+// api/add-exhibition.js — Reçoit le formulaire de création d'exposition (Étape 1 du back-office).
+// Même logique que add-artwork.js : upload + redimensionnement de la couverture,
+// publication du JSON sur GitHub. Le commit déclenche le redéploiement Vercel
+// qui régénère expositions.html / tr/expositions.html (build.js déjà en place).
+//
+// Conforme au cahier des charges V2 : cette étape crée uniquement l'entité
+// exposition. Aucune œuvre, aucun placement, aucune salle Three.js.
+const { formidable } = require('formidable');
+const fs = require('fs');
+const sharp = require('sharp');
+const { isValidSession } = require('./_auth');
+const { githubPutFile } = require('./_github');
 
-  #login-view{max-width:360px; margin:80px auto;}
-  #login-view h1{text-align:center;}
-  .field{margin-bottom:16px;}
-  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.6; margin-bottom:6px;}
-  .field input, .field textarea, .field select{
-    width:100%; padding:12px 14px; border:1px solid rgba(11,11,12,0.2); font-family:'Inter',sans-serif; font-size:14px; background:#fff; color:var(--paper);
+async function handler(req, res) {
+  if (!isValidSession(req)) {
+    res.status(401).json({ error: 'Non connecté.' });
+    return;
   }
-  .field textarea{resize:vertical;}
-  .hint{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.45; margin-top:4px;}
-  button{
-    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase;
-    background:var(--signature); color:#fff; border:none; padding:14px 24px; cursor:pointer;
-  }
-  button:disabled{opacity:0.5; cursor:default;}
-  .error-msg{color:#b3261e; font-size:13px; margin-top:10px;}
-  .success-msg{color:#1a7a3c; font-size:13px; margin-top:10px;}
-
-  #app-view{display:none; max-width:720px; margin:0 auto;}
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
-  .form-box{border:1px solid rgba(11,11,12,0.15); padding:32px;}
-  .form-box h2{font-family:'Fraunces',serif; font-size:22px; margin-bottom:6px;}
-  .form-box .step-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-bottom:24px; display:block;}
-
-  #logout-link{position:fixed; top:24px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6; cursor:pointer;}
-  .back-link{display:inline-block; margin-bottom:24px; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6;}
-</style>
-</head>
-<body>
-
-<div id="login-view">
-  <h1>Back-office</h1>
-  <div class="field">
-    <label>Mot de passe</label>
-    <input type="password" id="password-input" autofocus>
-  </div>
-  <button id="login-btn" style="width:100%;">Se connecter</button>
-  <div id="login-error" class="error-msg"></div>
-</div>
-
-<div id="app-view">
-  <span id="logout-link" onclick="logout()">Se déconnecter</span>
-  <a class="back-link" href="/admin/">&larr; Retour au back-office</a>
-  <h1>Expositions</h1>
-  <div class="subtitle">Back-office — Étape 1 : créer une exposition</div>
-
-  <div class="form-box">
-    <span class="step-tag">Étape 1 / — Créer une exposition</span>
-    <h2>Nouvelle exposition</h2>
-    <form id="create-form">
-      <div class="field"><label>Titre (Français) *</label><input type="text" name="title" required></div>
-      <div class="field"><label>Titre (Turc)</label><input type="text" name="title_tr" placeholder="si vide = même que FR"></div>
-
-      <div class="field">
-        <label>Artistes participants</label>
-        <input type="text" name="artists" placeholder="ex : Uğur Akın, Serdar Koç, Oktay Örnek">
-        <div class="hint">Séparez les noms par une virgule si plusieurs artistes participent.</div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field"><label>Date de début *</label><input type="date" name="date_start" required></div>
-        <div class="field"><label>Date de fin *</label><input type="date" name="date_end" required></div>
-      </div>
-
-      <div class="field">
-        <label>Statut</label>
-        <select name="status">
-          <option value="brouillon">Brouillon</option>
-          <option value="en_ligne">En ligne</option>
-          <option value="archivee">Archivée</option>
-        </select>
-      </div>
-
-      <div class="field"><label>Texte curatorial (Français)</label><textarea name="curatorial_text_fr" rows="4"></textarea></div>
-      <div class="field"><label>Texte curatorial (Turc)</label><textarea name="curatorial_text_tr" rows="4"></textarea></div>
-
-      <div class="field">
-        <label>Image de couverture *</label>
-        <input type="file" name="cover_image" accept="image/*" required>
-        <div class="hint">Optimisée automatiquement au prochain déploiement (WebP + miniature).</div>
-      </div>
-
-      <button type="submit" id="submit-btn">Créer l'exposition</button>
-      <div id="create-error" class="error-msg"></div>
-      <div id="create-success" class="success-msg"></div>
-    </form>
-  </div>
-</div>
-
-<script>
-  async function checkSession() {
-    const r = await fetch('/api/products'); // vérification de session générique, réutilise l'endpoint existant
-    if (r.status === 200) showApp();
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Méthode non autorisée' });
+    return;
   }
 
-  function showApp() {
-    document.getElementById('login-view').style.display = 'none';
-    document.getElementById('app-view').style.display = 'block';
-  }
+  try {
+    // Plafond relevé par rapport à add-artwork.js : un fichier audio est
+    // généralement plus volumineux qu'une image. Même mécanisme (formidable),
+    // pas de nouveau système.
+    const form = formidable({ maxFileSize: 30 * 1024 * 1024 }); // 30 Mo max en entrée
+    const [fields, files] = await form.parse(req);
 
-  document.getElementById('login-btn').addEventListener('click', async () => {
-    const password = document.getElementById('password-input').value;
-    const errEl = document.getElementById('login-error');
-    errEl.textContent = '';
-    const r = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
-    });
-    if (r.ok) {
-      showApp();
-    } else {
-      errEl.textContent = 'Mot de passe incorrect.';
+    const get = (f) => (Array.isArray(fields[f]) ? fields[f][0] : fields[f]) || '';
+
+    const title = get('title');
+    const titleTr = get('title_tr') || title;
+    const artists = get('artists')
+      .split(',')
+      .map((a) => a.trim())
+      .filter(Boolean);
+    const dateStart = get('date_start');
+    const dateEnd = get('date_end');
+    const status = ['brouillon', 'en_ligne', 'archivee'].includes(get('status')) ? get('status') : 'brouillon';
+    const curatorialFr = get('curatorial_text_fr');
+    const curatorialTr = get('curatorial_text_tr');
+
+    if (!title || !dateStart || !dateEnd) {
+      res.status(400).json({ error: 'Champs obligatoires manquants (titre, date de début, date de fin).' });
+      return;
     }
-  });
-
-  document.getElementById('password-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') document.getElementById('login-btn').click();
-  });
-
-  function logout() {
-    document.cookie = 'sag_session=; Max-Age=0; Path=/;';
-    location.reload();
-  }
-
-  document.getElementById('create-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('submit-btn');
-    const errEl = document.getElementById('create-error');
-    const okEl = document.getElementById('create-success');
-    errEl.textContent = '';
-    okEl.textContent = '';
-    btn.disabled = true;
-    btn.textContent = 'Création en cours…';
-
-    const formData = new FormData(e.target);
-    try {
-      const r = await fetch('/api/add-exhibition', { method: 'POST', body: formData });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || 'Erreur inconnue');
-      okEl.textContent = "Exposition créée ! Le site se met à jour automatiquement (1-2 minutes).";
-      e.target.reset();
-    } catch (err) {
-      errEl.textContent = err.message;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Créer l'exposition";
+    if (new Date(dateEnd) < new Date(dateStart)) {
+      res.status(400).json({ error: 'La date de fin ne peut pas précéder la date de début.' });
+      return;
     }
-  });
 
-  checkSession();
-</script>
+    const slugify = (s) =>
+      s
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/ğ/g, 'g').replace(/ş/g, 's').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ç/g, 'c')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
 
-</body>
-</html>
+    const baseSlug = slugify(title) || `exposition-${Date.now()}`;
+    const uniqueSuffix = Date.now().toString(36);
+    const slug = `${baseSlug}-${uniqueSuffix}`;
+
+    const imageFile = Array.isArray(files.cover_image) ? files.cover_image[0] : files.cover_image;
+    if (!imageFile) {
+      res.status(400).json({ error: 'Image de couverture manquante.' });
+      return;
+    }
+
+    // Redimensionnement + compression avant envoi (build.js optimisera en WebP au build)
+    const buffer = fs.readFileSync(imageFile.filepath);
+    const resized = await sharp(buffer)
+      .resize({ width: 1600, withoutEnlargement: true })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+
+    const imageName = `${slug}-cover.jpg`;
+    const imagePath = `assets/images/expositions/${imageName}`;
+
+    await githubPutFile(
+      imagePath,
+      resized.toString('base64'),
+      `Ajout couverture exposition : ${title}`
+    );
+
+    // Audio de l'exposition (facultatif) — appartient à l'exposition, pas
+    // aux œuvres. Même mécanisme de publication que la couverture
+    // (githubPutFile), aucun nouveau système de stockage. Pas de traitement
+    // Sharp ici (réservé aux images).
+    const audioFile = Array.isArray(files.audio) ? files.audio[0] : files.audio;
+    let audioFileName = null;
+
+    if (audioFile) {
+      const ALLOWED_AUDIO_EXT = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+      const originalName = audioFile.originalFilename || '';
+      const ext = originalName.includes('.') ? originalName.split('.').pop().toLowerCase() : '';
+
+      if (!ALLOWED_AUDIO_EXT.includes(ext)) {
+        res.status(400).json({ error: 'Format audio non supporté (mp3, wav, ogg, m4a, aac).' });
+        return;
+      }
+
+      const audioBuffer = fs.readFileSync(audioFile.filepath);
+      audioFileName = `${slug}-audio.${ext}`;
+
+      await githubPutFile(
+        `assets/audio/expositions/${audioFileName}`,
+        audioBuffer.toString('base64'),
+        `Ajout audio exposition : ${title}`
+      );
+    }
+
+    // Structure conforme au schéma exhibition.json déjà en production
+    // (Module A). Aucun champ "artworks"/"rooms" à ce stade — Étape 1
+    // uniquement, l'attribution des œuvres viendra dans une étape suivante.
+    const exhibitionData = {
+      slug,
+      status,
+      title,
+      title_tr: titleTr,
+      artists,
+      curatorial_text_fr: curatorialFr,
+      curatorial_text_tr: curatorialTr,
+      date_start: dateStart,
+      date_end: dateEnd,
+      cover_image: imageName,
+      audio: audioFileName, // null si aucun fichier fourni (champ facultatif)
+    };
+
+    const jsonPath = `content/exhibitions/${slug}/exhibition.json`;
+    await githubPutFile(
+      jsonPath,
+      Buffer.from(JSON.stringify(exhibitionData, null, 2)).toString('base64'),
+      `Création exposition : ${title}`
+    );
+
+    res.status(200).json({ ok: true, slug });
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur : ' + err.message });
+  }
+}
+
+module.exports = handler;
+module.exports.config = { api: { bodyParser: false } };
