@@ -1,6 +1,6 @@
 {
   "id": "art-msokidis-9av4",
-  "draft": false,
+  "draft": true,
   "artist": "oktay ö",
   "title_fr": "test",
   "title_tr": "test",
@@ -18,5 +18,5 @@
   "status": "disponible",
   "image": "art-msokidis-9av4.jpg",
   "created_at": "2026-08-11T11:19:14.513Z",
-  "updated_at": "2026-08-11T11:58:58.771Z"
+  "updated_at": "2026-08-11T12:00:03.723Z"
 }
