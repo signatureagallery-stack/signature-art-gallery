@@ -22,7 +22,10 @@ async function handler(req, res) {
   }
 
   try {
-    const form = formidable({ maxFileSize: 15 * 1024 * 1024 }); // 15 Mo max en entrée
+    // Plafond relevé par rapport à add-artwork.js : un fichier audio est
+    // généralement plus volumineux qu'une image. Même mécanisme (formidable),
+    // pas de nouveau système.
+    const form = formidable({ maxFileSize: 30 * 1024 * 1024 }); // 30 Mo max en entrée
     const [fields, files] = await form.parse(req);
 
     const get = (f) => (Array.isArray(fields[f]) ? fields[f][0] : fields[f]) || '';
@@ -82,6 +85,33 @@ async function handler(req, res) {
       `Ajout couverture exposition : ${title}`
     );
 
+    // Audio de l'exposition (facultatif) — appartient à l'exposition, pas
+    // aux œuvres. Même mécanisme de publication que la couverture
+    // (githubPutFile), aucun nouveau système de stockage. Pas de traitement
+    // Sharp ici (réservé aux images).
+    const audioFile = Array.isArray(files.audio) ? files.audio[0] : files.audio;
+    let audioFileName = null;
+
+    if (audioFile) {
+      const ALLOWED_AUDIO_EXT = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+      const originalName = audioFile.originalFilename || '';
+      const ext = originalName.includes('.') ? originalName.split('.').pop().toLowerCase() : '';
+
+      if (!ALLOWED_AUDIO_EXT.includes(ext)) {
+        res.status(400).json({ error: 'Format audio non supporté (mp3, wav, ogg, m4a, aac).' });
+        return;
+      }
+
+      const audioBuffer = fs.readFileSync(audioFile.filepath);
+      audioFileName = `${slug}-audio.${ext}`;
+
+      await githubPutFile(
+        `assets/audio/expositions/${audioFileName}`,
+        audioBuffer.toString('base64'),
+        `Ajout audio exposition : ${title}`
+      );
+    }
+
     // Structure conforme au schéma exhibition.json déjà en production
     // (Module A). Aucun champ "artworks"/"rooms" à ce stade — Étape 1
     // uniquement, l'attribution des œuvres viendra dans une étape suivante.
@@ -96,6 +126,7 @@ async function handler(req, res) {
       date_start: dateStart,
       date_end: dateEnd,
       cover_image: imageName,
+      audio: audioFileName, // null si aucun fichier fourni (champ facultatif)
     };
 
     const jsonPath = `content/exhibitions/${slug}/exhibition.json`;
