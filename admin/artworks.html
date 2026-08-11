@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back-office — Bibliothèque des œuvres — Signature Art Gallery</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  :root{--ink:#ffffff; --paper:#0b0b0c; --signature:#e2087a;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-weight:300; padding:40px 6vw 100px;}
+  h1{font-family:'Fraunces',serif; font-weight:500; font-size:32px; margin-bottom:8px;}
+  .subtitle{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.5; letter-spacing:0.5px; margin-bottom:40px;}
+
+  #login-view{max-width:360px; margin:80px auto;}
+  #login-view h1{text-align:center;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.6; margin-bottom:6px;}
+  .field input, .field textarea, .field select{
+    width:100%; padding:12px 14px; border:1px solid rgba(11,11,12,0.2); font-family:'Inter',sans-serif; font-size:14px; background:#fff; color:var(--paper);
+  }
+  .field textarea{resize:vertical;}
+  .hint{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.45; margin-top:4px;}
+  button{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    background:var(--signature); color:#fff; border:none; padding:14px 24px; cursor:pointer;
+  }
+  button:disabled{opacity:0.5; cursor:default;}
+  .secondary-btn{background:none; color:var(--paper); border:1px solid var(--paper); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; padding:8px 16px; cursor:pointer;}
+  .del-btn{background:none; border:1px solid #b3261e; color:#b3261e; padding:6px 12px; font-size:10px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; cursor:pointer;}
+  .error-msg{color:#b3261e; font-size:13px; margin-top:10px;}
+  .success-msg{color:#1a7a3c; font-size:13px; margin-top:10px;}
+
+  #app-view{display:none; max-width:900px; margin:0 auto;}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;}
+  .form-box{border:1px solid rgba(11,11,12,0.15); padding:32px; margin-bottom:40px;}
+  .form-box h2{font-family:'Fraunces',serif; font-size:22px; margin-bottom:6px;}
+  .step-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-bottom:24px; display:block;}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; padding:10px 8px; border-bottom:1px solid rgba(11,11,12,0.15);}
+  td{padding:10px 8px; border-bottom:1px solid rgba(11,11,12,0.08); vertical-align:middle;}
+  td img{width:44px; height:55px; object-fit:cover; background:#f4f4f4;}
+  .status-tag, .draft-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; padding:2px 8px; border-radius:2px; display:inline-block;}
+  .status-tag.disponible{background:#e6f4ea; color:#1a7a3c;}
+  .status-tag.reserve{background:#fff4e0; color:#a05a00;}
+  .status-tag.vendu{background:#f9e6e6; color:#b3261e;}
+  .draft-tag{background:#eee; color:#666; margin-left:6px;}
+  .row-actions{display:flex; gap:8px;}
+  .edit-btn{background:none; border:1px solid var(--paper); color:var(--paper); padding:6px 12px; font-size:10px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; cursor:pointer;}
+
+  #logout-link{position:fixed; top:24px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6; cursor:pointer;}
+  .back-link{display:inline-block; margin-bottom:24px; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6;}
+  .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+  .live-preview{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6; margin-top:6px;}
+  .radio-group{display:flex; gap:20px; align-items:center;}
+  .radio-group label{display:flex; align-items:center; gap:6px; font-family:'Inter',sans-serif; font-size:13px; text-transform:none; opacity:1;}
+  .radio-group input{width:auto;}
+</style>
+</head>
+<body>
+
+<div id="login-view">
+  <h1>Back-office</h1>
+  <div class="field">
+    <label>Mot de passe</label>
+    <input type="password" id="password-input" autofocus>
+  </div>
+  <button id="login-btn" style="width:100%;">Se connecter</button>
+  <div id="login-error" class="error-msg"></div>
+</div>
+
+<div id="app-view">
+  <span id="logout-link" onclick="logout()">Se déconnecter</span>
+  <a class="back-link" href="/admin/">&larr; Retour au back-office</a>
+  <h1>Bibliothèque des œuvres</h1>
+  <div class="subtitle">Back-office — Partie 2 : gestion des œuvres, indépendante des expositions</div>
+
+  <!-- ===================== VUE LISTE ===================== -->
+  <div id="library-view">
+    <div class="toolbar">
+      <h2 style="font-family:'Fraunces',serif; font-size:22px;">Œuvres (<span id="count">…</span>)</h2>
+      <button id="new-artwork-btn">+ Nouvelle œuvre</button>
+    </div>
+    <table>
+      <thead><tr><th></th><th>Artiste</th><th>Titre</th><th>Dimensions</th><th>Orientation</th><th>Catégorie</th><th>Statut</th><th></th></tr></thead>
+      <tbody id="artworks-list"><tr><td colspan="8" style="padding:20px 8px; opacity:0.5;">Chargement…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- ===================== VUE FORMULAIRE (création / édition) ===================== -->
+  <div id="form-view" style="display:none;">
+    <div class="form-box">
+      <span class="step-tag" id="form-mode-tag">Nouvelle œuvre</span>
+      <h2 id="form-title">Fiche œuvre</h2>
+      <form id="artwork-form">
+        <input type="hidden" name="id" id="field-id">
+        <input type="hidden" name="existing_image" id="field-existing-image">
+        <input type="hidden" name="created_at" id="field-created-at">
+
+        <div class="grid-2">
+          <div class="field"><label>Artiste</label><input type="text" name="artist" id="field-artist"></div>
+          <div class="field"><label>Année</label><input type="text" name="year" id="field-year"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field"><label>Titre (Français) *</label><input type="text" name="title_fr" id="field-title-fr" required></div>
+          <div class="field"><label>Titre (Turc)</label><input type="text" name="title_tr" id="field-title-tr" placeholder="si vide = même que FR"></div>
+        </div>
+
+        <div class="field"><label>Description (Français)</label><textarea name="desc_fr" id="field-desc-fr" rows="3"></textarea></div>
+        <div class="field"><label>Description (Turc)</label><textarea name="desc_tr" id="field-desc-tr" rows="3"></textarea></div>
+
+        <div class="field">
+          <label>Forme</label>
+          <div class="radio-group">
+            <label><input type="radio" name="shape" value="rectangulaire" id="shape-rect" checked> Rectangulaire</label>
+            <label><input type="radio" name="shape" value="ronde" id="shape-round"> Ronde</label>
+          </div>
+        </div>
+
+        <div class="grid-2" id="rect-dims">
+          <div class="field"><label>Hauteur (cm)</label><input type="number" min="0" step="0.1" name="height_cm" id="field-height"></div>
+          <div class="field"><label>Largeur (cm)</label><input type="number" min="0" step="0.1" name="width_cm" id="field-width"></div>
+        </div>
+        <div class="field" id="round-dims" style="display:none;">
+          <label>Diamètre (cm)</label><input type="number" min="0" step="0.1" name="diameter_cm" id="field-diameter">
+        </div>
+
+        <div class="live-preview" id="live-preview">Orientation : — · Catégorie : —</div>
+
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="field"><label>Technique</label><input type="text" name="technique" id="field-technique"></div>
+          <div class="field">
+            <label>Statut</label>
+            <select name="status" id="field-status">
+              <option value="disponible">Disponible</option>
+              <option value="reserve">Réservé</option>
+              <option value="vendu">Vendu</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Prix / information commerciale *</label>
+          <input type="text" name="price_info" id="field-price" placeholder="ex : 25.000 TL, ou « Sur demande », « Collection privée »…">
+          <div class="hint">Toujours renseigner une information, même si l'œuvre n'est pas à vendre. Non exigé pour un brouillon.</div>
+        </div>
+
+        <div class="field">
+          <label>Image de l'œuvre</label>
+          <input type="file" name="image" id="field-image" accept="image/*">
+          <div class="hint" id="image-hint">Requise pour finaliser la fiche — facultative pour un brouillon.</div>
+          <img id="current-image-preview" style="display:none; width:90px; margin-top:8px; object-fit:cover;">
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:20px;">
+          <button type="button" id="save-draft-btn" class="secondary-btn">Enregistrer comme brouillon</button>
+          <button type="submit" id="save-final-btn">Enregistrer</button>
+          <button type="button" id="cancel-form-btn" class="secondary-btn" style="margin-left:auto;">Annuler</button>
+        </div>
+        <div id="form-error" class="error-msg"></div>
+        <div id="form-success" class="success-msg"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  let artworksCache = [];
+
+  async function checkSession() {
+    const r = await fetch('/api/products');
+    if (r.status === 200) { showApp(); loadArtworks(); }
+  }
+
+  function showApp() {
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('app-view').style.display = 'block';
+  }
+
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const password = document.getElementById('password-input').value;
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (r.ok) { showApp(); loadArtworks(); } else { errEl.textContent = 'Mot de passe incorrect.'; }
+  });
+  document.getElementById('password-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-btn').click();
+  });
+  function logout() {
+    document.cookie = 'sag_session=; Max-Age=0; Path=/;';
+    location.reload();
+  }
+
+  // ---------- Règle d'orientation / catégorie — aperçu client, le calcul
+  // serveur (save-artwork.js) fait foi dans les données enregistrées. ----------
+  function computeOrientationCategory(shape, h, w, d) {
+    if (shape === 'ronde') {
+      const dia = Number(d) || 0;
+      const category = dia <= 30 ? 'petit' : dia <= 60 ? 'moyen' : 'grand';
+      return { orientation: 'ronde', category };
+    }
+    const hh = Number(h) || 0, ww = Number(w) || 0;
+    const orientation = hh > ww ? 'verticale' : ww > hh ? 'horizontale' : 'carree';
+    const maxDim = Math.max(hh, ww);
+    const category = maxDim <= 30 ? 'petit' : maxDim <= 60 ? 'moyen' : 'grand';
+    return { orientation, category };
+  }
+
+  function updateShapeVisibility() {
+    const isRound = document.getElementById('shape-round').checked;
+    document.getElementById('rect-dims').style.display = isRound ? 'none' : 'grid';
+    document.getElementById('round-dims').style.display = isRound ? 'block' : 'none';
+    updateLivePreview();
+  }
+  document.getElementById('shape-rect').addEventListener('change', updateShapeVisibility);
+  document.getElementById('shape-round').addEventListener('change', updateShapeVisibility);
+  ['field-height', 'field-width', 'field-diameter'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateLivePreview);
+  });
+
+  function updateLivePreview() {
+    const shape = document.querySelector('input[name="shape"]:checked').value;
+    const h = document.getElementById('field-height').value;
+    const w = document.getElementById('field-width').value;
+    const d = document.getElementById('field-diameter').value;
+    const { orientation, category } = computeOrientationCategory(shape, h, w, d);
+    document.getElementById('live-preview').textContent = `Orientation : ${orientation} · Catégorie : ${category}`;
+  }
+
+  // ---------- Bibliothèque ----------
+  async function loadArtworks() {
+    const r = await fetch('/api/artworks');
+    const data = await r.json();
+    artworksCache = data.artworks || [];
+    document.getElementById('count').textContent = artworksCache.length;
+    const tbody = document.getElementById('artworks-list');
+    if (artworksCache.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="padding:20px 8px; opacity:0.5;">Aucune œuvre pour le moment.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = artworksCache.map((a) => {
+      const dims = a.shape === 'ronde' ? `Ø ${a.diameter_cm ?? '—'} cm` : `${a.height_cm ?? '—'} × ${a.width_cm ?? '—'} cm`;
+      const img = a.image ? `/assets/images/artworks/${a.image}` : '';
+      return `
+        <tr>
+          <td>${img ? `<img src="${img}" alt="">` : ''}</td>
+          <td>${a.artist || '—'}</td>
+          <td>${a.title_fr || '—'} ${a.draft ? '<span class="draft-tag">Brouillon</span>' : ''}</td>
+          <td>${dims}</td>
+          <td>${a.orientation || '—'}</td>
+          <td>${a.category || '—'}</td>
+          <td><span class="status-tag ${a.status}">${a.status === 'vendu' ? 'Vendu' : a.status === 'reserve' ? 'Réservé' : 'Disponible'}</span></td>
+          <td>
+            <div class="row-actions">
+              <button class="edit-btn" onclick="editArtwork('${a.id}')">Modifier</button>
+              <button class="del-btn" onclick="deleteArtwork('${a.id}','${a.image || ''}')">Supprimer</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  async function deleteArtwork(id, image) {
+    if (!confirm('Supprimer définitivement cette œuvre ? Cette action ne vérifie pas son utilisation dans une exposition.')) return;
+    const r = await fetch('/api/artworks', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, image }),
+    });
+    if (r.ok) loadArtworks(); else alert('Erreur lors de la suppression.');
+  }
+
+  function editArtwork(id) {
+    const a = artworksCache.find((x) => x.id === id);
+    if (!a) return;
+    resetForm();
+    document.getElementById('form-mode-tag').textContent = 'Modifier une œuvre';
+    document.getElementById('form-title').textContent = a.title_fr || 'Fiche œuvre';
+    document.getElementById('field-id').value = a.id;
+    document.getElementById('field-created-at').value = a.created_at || '';
+    document.getElementById('field-existing-image').value = a.image || '';
+    document.getElementById('field-artist').value = a.artist || '';
+    document.getElementById('field-year').value = a.year || '';
+    document.getElementById('field-title-fr').value = a.title_fr || '';
+    document.getElementById('field-title-tr').value = a.title_tr || '';
+    document.getElementById('field-desc-fr').value = a.desc_fr || '';
+    document.getElementById('field-desc-tr').value = a.desc_tr || '';
+    document.getElementById('shape-rect').checked = a.shape !== 'ronde';
+    document.getElementById('shape-round').checked = a.shape === 'ronde';
+    document.getElementById('field-height').value = a.height_cm || '';
+    document.getElementById('field-width').value = a.width_cm || '';
+    document.getElementById('field-diameter').value = a.diameter_cm || '';
+    document.getElementById('field-technique').value = a.technique || '';
+    document.getElementById('field-status').value = a.status || 'disponible';
+    document.getElementById('field-price').value = a.price_info || '';
+    if (a.image) {
+      const img = document.getElementById('current-image-preview');
+      img.src = `/assets/images/artworks/${a.image}`;
+      img.style.display = 'block';
+    }
+    updateShapeVisibility();
+    showForm();
+  }
+
+  function resetForm() {
+    document.getElementById('artwork-form').reset();
+    document.getElementById('field-id').value = '';
+    document.getElementById('field-existing-image').value = '';
+    document.getElementById('field-created-at').value = '';
+    document.getElementById('current-image-preview').style.display = 'none';
+    document.getElementById('form-error').textContent = '';
+    document.getElementById('form-success').textContent = '';
+    document.getElementById('form-mode-tag').textContent = 'Nouvelle œuvre';
+    document.getElementById('form-title').textContent = 'Fiche œuvre';
+    updateShapeVisibility();
+  }
+
+  function showForm() {
+    document.getElementById('library-view').style.display = 'none';
+    document.getElementById('form-view').style.display = 'block';
+  }
+  function showLibrary() {
+    document.getElementById('form-view').style.display = 'none';
+    document.getElementById('library-view').style.display = 'block';
+    loadArtworks();
+  }
+
+  document.getElementById('new-artwork-btn').addEventListener('click', () => { resetForm(); showForm(); });
+  document.getElementById('cancel-form-btn').addEventListener('click', showLibrary);
+
+  async function submitArtwork(isDraft) {
+    const form = document.getElementById('artwork-form');
+    const errEl = document.getElementById('form-error');
+    const okEl = document.getElementById('form-success');
+    errEl.textContent = ''; okEl.textContent = '';
+
+    const formData = new FormData(form);
+    formData.set('draft', isDraft ? 'true' : 'false');
+
+    try {
+      const r = await fetch('/api/save-artwork', { method: 'POST', body: formData });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Erreur inconnue');
+      okEl.textContent = isDraft ? 'Brouillon enregistré.' : 'Œuvre enregistrée.';
+      setTimeout(showLibrary, 700);
+    } catch (err) {
+      errEl.textContent = err.message;
+    }
+  }
+
+  document.getElementById('artwork-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitArtwork(false);
+  });
+  document.getElementById('save-draft-btn').addEventListener('click', () => submitArtwork(true));
+
+  updateShapeVisibility();
+  checkSession();
+</script>
+
+</body>
+</html>
