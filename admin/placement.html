@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back-office — Placement des œuvres — Signature Art Gallery</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  :root{--ink:#ffffff; --paper:#0b0b0c; --signature:#e2087a;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-weight:300; padding:40px 4vw 100px;}
+  h1{font-family:'Fraunces',serif; font-weight:500; font-size:32px; margin-bottom:8px;}
+  .subtitle{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.5; letter-spacing:0.5px; margin-bottom:24px;}
+  select{padding:10px 12px; border:1px solid rgba(11,11,12,0.2); font-family:'Inter',sans-serif; font-size:14px; background:#fff; color:var(--paper); min-width:280px;}
+  button{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase; background:var(--signature); color:#fff; border:none; padding:12px 22px; cursor:pointer;}
+  button:disabled{opacity:0.4; cursor:default;}
+  .error-msg{color:#b3261e; font-size:13px; margin-top:10px;}
+  .success-msg{color:#1a7a3c; font-size:13px; margin-top:10px;}
+
+  #login-view{max-width:360px; margin:80px auto;}
+  #login-view h1{text-align:center;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.6; margin-bottom:6px;}
+  .field input{width:100%; padding:12px 14px; border:1px solid rgba(11,11,12,0.2); font-size:14px;}
+
+  #app-view{display:none;}
+  #logout-link{position:fixed; top:24px; right:4vw; font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:0.6; cursor:pointer;}
+
+  .toolbar{display:flex; align-items:center; gap:16px; margin-bottom:28px; flex-wrap:wrap;}
+
+  .layout{display:grid; grid-template-columns:260px 1fr; gap:32px;}
+  @media (max-width:900px){ .layout{grid-template-columns:1fr;} }
+
+  .library{border:1px solid rgba(11,11,12,0.15); padding:16px; max-height:80vh; overflow-y:auto;}
+  .library h3{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-bottom:14px;}
+  .lib-item{display:flex; gap:10px; align-items:center; padding:8px; border:1px solid rgba(11,11,12,0.1); margin-bottom:8px; cursor:grab; background:#fff;}
+  .lib-item.used{opacity:0.4;}
+  .lib-item img{width:36px; height:44px; object-fit:cover; background:#f2f2f2; flex-shrink:0;}
+  .lib-item .meta{font-size:11px; line-height:1.4;}
+  .lib-item .meta .t{font-family:'Fraunces',serif; font-style:italic;}
+  .lib-item .meta .d{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.5;}
+
+  .room-block{margin-bottom:36px;}
+  .room-block h2{font-family:'Fraunces',serif; font-size:20px; margin-bottom:14px;}
+  .wall-strip{margin-bottom:18px;}
+  .wall-strip .wall-label{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-bottom:6px;}
+  .wall-surface{
+    position:relative; background:#f5f3ee; border:1px dashed rgba(11,11,12,0.25);
+    height:130px; overflow:visible;
+  }
+  .wall-surface.dragover{ background:#efe6f0; border-color:var(--signature); }
+
+  .placed{
+    position:absolute; bottom:8px; background:#fff; border:1px solid rgba(11,11,12,0.35);
+    cursor:grab; display:flex; align-items:flex-end; justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+  }
+  .placed.round{border-radius:50%;}
+  .placed .remove-btn{
+    position:absolute; top:-10px; right:-10px; width:18px; height:18px; border-radius:50%;
+    background:#b3261e; color:#fff; font-size:11px; line-height:18px; text-align:center; cursor:pointer; display:none;
+  }
+  .placed:hover .remove-btn{display:block;}
+
+  .order-panel{border:1px solid rgba(11,11,12,0.15); padding:16px; margin-top:24px;}
+  .order-panel h3{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-bottom:10px;}
+  .order-panel ol{padding-left:20px; font-size:13px; line-height:1.9;}
+  .order-panel .empty{opacity:0.4; font-size:13px;}
+
+  .scale-note{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.45; margin:-10px 0 20px;}
+</style>
+</head>
+<body>
+
+<div id="login-view">
+  <h1>Back-office</h1>
+  <div class="field">
+    <label>Mot de passe</label>
+    <input type="password" id="password-input" autofocus>
+  </div>
+  <button id="login-btn" style="width:100%;">Se connecter</button>
+  <div id="login-error" class="error-msg"></div>
+</div>
+
+<div id="app-view">
+  <span id="logout-link" onclick="logout()">Se déconnecter</span>
+  <h1>Placement des œuvres</h1>
+  <div class="subtitle">Back-office — Partie 3 : glisser les œuvres de la bibliothèque sur les murs de la galerie</div>
+
+  <div class="toolbar">
+    <select id="exhibition-select"><option>Chargement des expositions…</option></select>
+    <button id="save-btn" disabled>Enregistrer le placement</button>
+    <span id="save-feedback" style="font-family:'IBM Plex Mono',monospace; font-size:11px;"></span>
+  </div>
+  <div class="scale-note">Échelle : 1 m ≈ 40 px. Placement libre — aucun nombre maximal d'œuvres par mur.</div>
+
+  <div class="layout">
+    <div class="library">
+      <h3>Bibliothèque d'œuvres</h3>
+      <div id="library-list"></div>
+    </div>
+
+    <div id="rooms-wrap"></div>
+  </div>
+
+  <div class="order-panel">
+    <h3>Ordre de visite (déterminé par la position sur les murs)</h3>
+    <div id="order-list"><span class="empty">Aucune œuvre placée pour le moment.</span></div>
+  </div>
+</div>
+
+<script>
+  // ---- Constantes de mise à l'échelle (partagées avec le prototype Three.js validé) ----
+  const PX_PER_M = 40;
+  const LONG_WALL_M = 14;   // murs Ouest / Est
+  const SHORT_WALL_M = 9;   // murs Sud / Nord
+  const ROOM_ORDER = ['room1', 'room2'];
+  const WALL_ORDER = ['south', 'west', 'east', 'north'];
+  const WALL_LABEL = { south: 'Sud', west: 'Ouest', east: 'Est', north: 'Nord' };
+  const ROOM_LABEL = { room1: 'Salle 1', room2: 'Salle 2' };
+  const WALL_LENGTH_M = { south: SHORT_WALL_M, north: SHORT_WALL_M, west: LONG_WALL_M, east: LONG_WALL_M };
+
+  let artworks = [];
+  let placements = []; // { artwork_id, room, wall, position_m }
+  let currentSlug = null;
+
+  async function checkSession() {
+    const r = await fetch('/api/artworks');
+    if (r.status === 200) { showApp(); init(); }
+  }
+  function showApp() {
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('app-view').style.display = 'block';
+  }
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const password = document.getElementById('password-input').value;
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
+    if (r.ok) { showApp(); init(); } else { errEl.textContent = 'Mot de passe incorrect.'; }
+  });
+  document.getElementById('password-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+  function logout() { document.cookie = 'sag_session=; Max-Age=0; Path=/;'; location.reload(); }
+
+  async function init() {
+    buildRoomsDom();
+    await loadArtworks();
+    await loadExhibitions();
+    document.getElementById('exhibition-select').addEventListener('change', onExhibitionChange);
+    document.getElementById('save-btn').addEventListener('click', savePlacement);
+  }
+
+  async function loadArtworks() {
+    const r = await fetch('/api/artworks');
+    const data = await r.json();
+    artworks = data.artworks || [];
+  }
+
+  async function loadExhibitions() {
+    const sel = document.getElementById('exhibition-select');
+    const r = await fetch('/api/exhibitions');
+    const data = await r.json();
+    const list = data.exhibitions || [];
+    if (list.length === 0) {
+      sel.innerHTML = '<option>Aucune exposition — créez-en une d\\'abord</option>';
+      return;
+    }
+    sel.innerHTML = list.map(e => `<option value="${e.slug}">${e.title} (${e.status})</option>`).join('');
+    document.getElementById('save-btn').disabled = false;
+    await onExhibitionChange();
+  }
+
+  async function onExhibitionChange() {
+    const sel = document.getElementById('exhibition-select');
+    currentSlug = sel.value;
+    if (!currentSlug) return;
+    const r = await fetch(`/api/placement?slug=${encodeURIComponent(currentSlug)}`);
+    const data = await r.json();
+    placements = data.placements || [];
+    renderLibrary();
+    renderPlacements();
+    renderOrder();
+  }
+
+  function artworkById(id) { return artworks.find(a => a.id === id); }
+
+  function renderLibrary() {
+    const el = document.getElementById('library-list');
+    if (artworks.length === 0) {
+      el.innerHTML = '<div style="font-size:12px; opacity:0.5;">Bibliothèque vide.</div>';
+      return;
+    }
+    el.innerHTML = artworks.map(a => {
+      const used = placements.some(p => p.artwork_id === a.id);
+      const dim = a.shape === 'ronde' ? `⌀ ${a.diameter_cm} cm` : `${a.width_cm}×${a.height_cm} cm`;
+      return `
+        <div class="lib-item${used ? ' used' : ''}" draggable="true" data-id="${a.id}">
+          <img src="/assets/images/artworks/${a.image || ''}" alt="">
+          <div class="meta">
+            <div class="t">${a.titre_fr || '(sans titre)'}</div>
+            <div>${a.artiste || ''}</div>
+            <div class="d">${dim} — ${a.category}</div>
+          </div>
+        </div>`;
+    }).join('');
+    el.querySelectorAll('.lib-item').forEach(node => {
+      node.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'new', artwork_id: node.dataset.id }));
+      });
+    });
+  }
+
+  function buildRoomsDom() {
+    const wrap = document.getElementById('rooms-wrap');
+    wrap.innerHTML = ROOM_ORDER.map(room => `
+      <div class="room-block">
+        <h2>${ROOM_LABEL[room]}</h2>
+        ${WALL_ORDER.map(wall => `
+          <div class="wall-strip">
+            <div class="wall-label">${WALL_LABEL[wall]} — ${WALL_LENGTH_M[wall]} m</div>
+            <div class="wall-surface" data-room="${room}" data-wall="${wall}"
+                 style="width:${WALL_LENGTH_M[wall] * PX_PER_M}px; max-width:100%;"></div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+    wrap.querySelectorAll('.wall-surface').forEach(surface => {
+      surface.addEventListener('dragover', (e) => { e.preventDefault(); surface.classList.add('dragover'); });
+      surface.addEventListener('dragleave', () => surface.classList.remove('dragover'));
+      surface.addEventListener('drop', (e) => {
+        e.preventDefault();
+        surface.classList.remove('dragover');
+        const raw = e.dataTransfer.getData('text/plain');
+        if (!raw) return;
+        const payload = JSON.parse(raw);
+        const rect = surface.getBoundingClientRect();
+        const offsetX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+        const positionM = Math.round((offsetX / PX_PER_M) * 100) / 100;
+        const room = surface.dataset.room;
+        const wall = surface.dataset.wall;
+
+        if (payload.type === 'new') {
+          if (placements.some(p => p.artwork_id === payload.artwork_id)) {
+            // Une œuvre de la bibliothèque n'occupe qu'un seul emplacement dans
+            // CETTE exposition à la fois — on la déplace plutôt que la dupliquer.
+            const existing = placements.find(p => p.artwork_id === payload.artwork_id);
+            existing.room = room; existing.wall = wall; existing.position_m = positionM;
+          } else {
+            placements.push({ artwork_id: payload.artwork_id, room, wall, position_m: positionM });
+          }
+        } else if (payload.type === 'move') {
+          const p = placements[payload.index];
+          if (p) { p.room = room; p.wall = wall; p.position_m = positionM; }
+        }
+        renderLibrary();
+        renderPlacements();
+        renderOrder();
+      });
+    });
+  }
+
+  function renderPlacements() {
+    document.querySelectorAll('.wall-surface').forEach(s => { s.innerHTML = ''; });
+    placements.forEach((p, index) => {
+      const artwork = artworkById(p.artwork_id);
+      if (!artwork) return;
+      const surface = document.querySelector(`.wall-surface[data-room="${p.room}"][data-wall="${p.wall}"]`);
+      if (!surface) return;
+
+      const isRound = artwork.shape === 'ronde';
+      const widthCm = isRound ? artwork.diameter_cm : artwork.width_cm;
+      const heightCm = isRound ? artwork.diameter_cm : artwork.height_cm;
+      const wPx = Math.max(14, (widthCm / 100) * PX_PER_M);
+      const hPx = Math.max(14, (heightCm / 100) * PX_PER_M);
+      const leftPx = p.position_m * PX_PER_M - wPx / 2;
+
+      const node = document.createElement('div');
+      node.className = 'placed' + (isRound ? ' round' : '');
+      node.style.width = wPx + 'px';
+      node.style.height = hPx + 'px';
+      node.style.left = leftPx + 'px';
+      node.draggable = true;
+      node.title = `${artwork.titre_fr || ''} — ${p.position_m} m`;
+      node.innerHTML = `<span class="remove-btn" data-index="${index}">×</span>`;
+
+      node.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'move', index }));
+      });
+      node.querySelector('.remove-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        placements.splice(index, 1);
+        renderLibrary(); renderPlacements(); renderOrder();
+      });
+
+      surface.appendChild(node);
+    });
+  }
+
+  function computeVisitOrder() {
+    return [...placements].sort((a, b) => {
+      const ra = ROOM_ORDER.indexOf(a.room), rb = ROOM_ORDER.indexOf(b.room);
+      if (ra !== rb) return ra - rb;
+      const wa = WALL_ORDER.indexOf(a.wall), wb = WALL_ORDER.indexOf(b.wall);
+      if (wa !== wb) return wa - wb;
+      return a.position_m - b.position_m;
+    });
+  }
+
+  function renderOrder() {
+    const el = document.getElementById('order-list');
+    const ordered = computeVisitOrder();
+    if (ordered.length === 0) {
+      el.innerHTML = '<span class="empty">Aucune œuvre placée pour le moment.</span>';
+      return;
+    }
+    el.innerHTML = '<ol>' + ordered.map(p => {
+      const a = artworkById(p.artwork_id);
+      return `<li>${a ? (a.titre_fr || '(sans titre)') : '(œuvre introuvable)'} — ${ROOM_LABEL[p.room]}, mur ${WALL_LABEL[p.wall]}</li>`;
+    }).join('') + '</ol>';
+  }
+
+  async function savePlacement() {
+    if (!currentSlug) return;
+    const btn = document.getElementById('save-btn');
+    const feedback = document.getElementById('save-feedback');
+    btn.disabled = true;
+    feedback.textContent = 'Enregistrement…';
+    feedback.style.color = '';
+    try {
+      const r = await fetch('/api/save-placement', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: currentSlug, placements }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Erreur inconnue');
+      feedback.textContent = 'Placement enregistré.';
+      feedback.style.color = '#1a7a3c';
+    } catch (err) {
+      feedback.textContent = err.message;
+      feedback.style.color = '#b3261e';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  checkSession();
+</script>
+
+</body>
+</html>
