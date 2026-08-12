@@ -162,7 +162,7 @@
     const data = await r.json();
     const list = data.exhibitions || [];
     if (list.length === 0) {
-      sel.innerHTML = '<option>Aucune exposition — créez-en une d\\'abord</option>';
+     sel.innerHTML = "<option>Aucune exposition – créez-en une d'abord</option>";
       return;
     }
     sel.innerHTML = list.map(e => `<option value="${e.slug}">${e.title} (${e.status})</option>`).join('');
