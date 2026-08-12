@@ -1,0 +1,23 @@
+{
+  "exhibition_slug": "retour-a-la-couleur",
+  "placements": [
+    {
+      "artwork_id": "art-mspmi0c1-4vfp",
+      "room": "room1",
+      "wall": "south",
+      "position_m": 4.33
+    },
+    {
+      "artwork_id": "art-mspmj5p4-9mfg",
+      "room": "room1",
+      "wall": "south",
+      "position_m": 0.83
+    },
+    {
+      "artwork_id": "art-mspmgxh3-mg69",
+      "room": "room1",
+      "wall": "south",
+      "position_m": 7.83
+    }
+  ]
+}
