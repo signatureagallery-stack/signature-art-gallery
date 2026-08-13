@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test — Galerie Three.js (données réelles)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #141210; overflow: hidden; font-family: -apple-system, sans-serif; }
+  #mount { width: 100vw; height: 100vh; }
+  #topbar { position: fixed; top: 0; left: 0; right: 0; padding: 16px 24px; display: flex; justify-content: space-between; color: rgba(255,255,255,0.7); font-family: monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; pointer-events: none; }
+  #controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+  #controls button { font-family: monospace; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: #fff; color: #0b0b0c; border: none; padding: 10px 18px; cursor: pointer; }
+  #controls button.secondary { background: rgba(255,255,255,0.9); }
+  #controls button.exit { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; margin-left: 10px; }
+  #controls button:disabled { opacity: 0.4; cursor: default; }
+  #error-overlay, #loading-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-family: monospace; font-size: 13px; text-align: center; padding: 24px; background: rgba(0,0,0,0.85); }
+  #error-overlay { display: none; color: #ff8080; }
+  #diagnostics { position: fixed; top: 60px; left: 24px; background: rgba(0,0,0,0.7); color: #fff; font-family: monospace; font-size: 10px; padding: 10px 12px; max-width: 280px; display: none; }
+  #diagnostics .missing { color: #ff8080; }
+</style>
+</head>
+<body>
+
+<div id="mount"></div>
+<div id="loading-overlay">Chargement des données de l'exposition…</div>
+<div id="error-overlay"></div>
+<div id="diagnostics"></div>
+
+<div id="topbar">
+  <span id="label-left">Étape 5 — Test rendu (données réelles)</span>
+  <span id="label-right"></span>
+</div>
+
+<div id="controls">
+  <button id="btn-prev" class="secondary" disabled>Précédent</button>
+  <button id="btn-play" disabled>Play</button>
+  <button id="btn-next" class="secondary" disabled>Suivant</button>
+  <button id="btn-exit" class="exit" disabled>Sortir</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from "three";
+
+// ============================================================================
+// Page de TEST autonome — même logique que GalleryFromBackoffice.jsx,
+// réécrite en JavaScript natif (aucun React, aucun bundler) pour pouvoir
+// être déployée telle quelle sur l'infrastructure Vercel existante
+// (générateur statique, sans étape de build front-end).
+//
+// Accès réservé : cette page appelle des API protégées (session requise).
+// Se connecter d'abord via /admin/ dans le même navigateur, puis ouvrir
+// cette page dans le même onglet (le cookie de session est partagé).
+// ============================================================================
+
+const params = new URLSearchParams(window.location.search);
+const exhibitionSlug = params.get('slug') || 'retour-a-la-couleur';
+document.getElementById('label-right').textContent = exhibitionSlug;
+
+const ROOM_ORDER = ['room1', 'room2'];
+const WALL_ORDER = ['south', 'west', 'east', 'north'];
+const LONG_WALL_M = 14, SHORT_WALL_M = 9;
+const REFERENCE_MOYEN_HEIGHT_M = 0.6;
+const EYE_Y = 1.7, ART_CENTER_Y = EYE_Y + 0.15, ROOM_H = 5;
+const WALL_COLOR_LONG = 0x1a2f8f, WALL_COLOR_SHORT = 0xdccbaf;
+const DOOR_GAP = 2.2, DOOR_HEIGHT = 2.6;
+
+function resolveArtwork(artworks, id) { return artworks.find(a => a.id === id) || null; }
+function compareByVisitOrder(a, b) {
+  const ra = ROOM_ORDER.indexOf(a.room), rb = ROOM_ORDER.indexOf(b.room);
+  if (ra !== rb) return ra - rb;
+  const wa = WALL_ORDER.indexOf(a.wall), wb = WALL_ORDER.indexOf(b.wall);
+  if (wa !== wb) return wa - wb;
+  return a.position_m - b.position_m;
+}
+function buildWallContents(placements, artworks) {
+  const grouped = { room1: { south: [], west: [], east: [], north: [] }, room2: { south: [], west: [], east: [], north: [] } };
+  const missing = [];
+  [...placements].sort(compareByVisitOrder).forEach(p => {
+    if (!grouped[p.room] || !grouped[p.room][p.wall]) return;
+    const artwork = resolveArtwork(artworks, p.artwork_id);
+    if (!artwork) { missing.push(p.artwork_id); return; }
+    grouped[p.room][p.wall].push({ placement: p, artwork });
+  });
+  return { grouped, missing };
+}
+function getRealDimensionsMeters(artwork) {
+  if (artwork.shape === 'ronde') { const d = (artwork.diameter_cm || 0) / 100; return { shape: 'ronde', diameterM: d, widthM: d, heightM: d }; }
+  return { shape: 'rectangulaire', widthM: (artwork.width_cm || 0) / 100, heightM: (artwork.height_cm || 0) / 100 };
+}
+function cameraDistanceForArtwork(dims, category, isMobile) {
+  const base = isMobile ? 2.3 : 4.0;
+  if (category !== 'grand') return base;
+  const refHeight = dims.shape === 'ronde' ? dims.diameterM : dims.heightM;
+  return base * (refHeight / REFERENCE_MOYEN_HEIGHT_M);
+}
+
+async function boot() {
+  let artworks, placements;
+  try {
+    const [artworksRes, placementRes] = await Promise.all([
+      fetch('/api/artworks'),
+      fetch(`/api/placement?slug=${encodeURIComponent(exhibitionSlug)}`),
+    ]);
+    if (artworksRes.status === 401 || placementRes.status === 401) {
+      throw new Error("Non connecté. Ouvrez /admin/ dans cet onglet, connectez-vous, puis revenez sur cette page.");
+    }
+    if (!artworksRes.ok || !placementRes.ok) throw new Error('Impossible de charger les données Back-office.');
+    const artworksData = await artworksRes.json();
+    const placementData = await placementRes.json();
+    artworks = artworksData.artworks || [];
+    placements = placementData.placements || [];
+  } catch (err) {
+    document.getElementById('loading-overlay').style.display = 'none';
+    const errEl = document.getElementById('error-overlay');
+    errEl.textContent = 'Erreur : ' + err.message;
+    errEl.style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('loading-overlay').style.display = 'none';
+  const { grouped, missing } = buildWallContents(placements, artworks);
+  const diagEl = document.getElementById('diagnostics');
+  diagEl.style.display = 'block';
+  diagEl.innerHTML = `Placements : ${placements.length - missing.length}/${placements.length} résolus` +
+    (missing.length ? `<div class="missing">Orphelins : ${missing.join(', ')}</div>` : '');
+
+  initScene(grouped);
+}
+
+function initScene(grouped) {
+  const mount = document.getElementById('mount');
+  const width = mount.clientWidth, height = mount.clientHeight;
+  const isMobile = window.innerWidth < 768;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x141210);
+  const camera = new THREE.PerspectiveCamera(isMobile ? 44 : 55, width / height, 0.1, 200);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(width, height);
+  mount.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  scene.add(new THREE.HemisphereLight(0xf3ead9, 0x2a2a2a, 0.35));
+
+  const textureLoader = new THREE.TextureLoader();
+  const raycastTargets = [];
+  const allSteps = [];
+
+  const longMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_LONG, roughness: 0.85, side: THREE.BackSide });
+  const shortMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_SHORT, roughness: 0.85, side: THREE.BackSide });
+  const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xe4e0d5, roughness: 1, side: THREE.BackSide });
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0x6b6357, roughness: 0.6, side: THREE.BackSide });
+  const invisibleMat = new THREE.MeshBasicMaterial({ visible: false });
+
+  function mountSpot(x, z, wallX, wallZ) {
+    const spot = new THREE.SpotLight(0xfff2cf, 3.2, 6, Math.PI / 7, 0.6, 1.4);
+    spot.position.set(x, ROOM_H - 0.3, z);
+    spot.target.position.set(wallX, ART_CENTER_Y, wallZ);
+    scene.add(spot, spot.target);
+    const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.1, 10), new THREE.MeshStandardMaterial({ color: 0x2a2824 }));
+    fixture.position.set(x, ROOM_H - 0.25, z);
+    scene.add(fixture);
+  }
+
+  function buildDoorway(wallZ, doorWorldX, xStart, xEnd) {
+    const leftWidth = doorWorldX - DOOR_GAP / 2 - xStart;
+    const rightWidth = xEnd - (doorWorldX + DOOR_GAP / 2);
+    const jambMat = new THREE.MeshStandardMaterial({ color: 0x1c1a17, roughness: 0.6 });
+    const segMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_SHORT, roughness: 0.85, side: THREE.DoubleSide });
+    if (leftWidth > 0.05) { const l = new THREE.Mesh(new THREE.PlaneGeometry(leftWidth, ROOM_H), segMat); l.position.set(xStart + leftWidth / 2, ROOM_H / 2, wallZ); scene.add(l); }
+    if (rightWidth > 0.05) { const r = new THREE.Mesh(new THREE.PlaneGeometry(rightWidth, ROOM_H), segMat); r.position.set(doorWorldX + DOOR_GAP / 2 + rightWidth / 2, ROOM_H / 2, wallZ); scene.add(r); }
+    const header = new THREE.Mesh(new THREE.PlaneGeometry(DOOR_GAP, ROOM_H - DOOR_HEIGHT), segMat);
+    header.position.set(doorWorldX, DOOR_HEIGHT + (ROOM_H - DOOR_HEIGHT) / 2, wallZ);
+    scene.add(header);
+    [-1, 1].forEach(side => { const j = new THREE.Mesh(new THREE.BoxGeometry(0.08, DOOR_HEIGHT, 0.16), jambMat); j.position.set(doorWorldX + side * (DOOR_GAP / 2), DOOR_HEIGHT / 2, wallZ); scene.add(j); });
+  }
+
+  function placeOnXWallReal(entry, wallX, zOrigin, side) {
+    const { artwork, placement } = entry;
+    const dims = getRealDimensionsMeters(artwork);
+    const z = zOrigin + placement.position_m;
+    const inward = side === 'west' ? 0.075 : -0.075;
+    const rotY = side === 'west' ? Math.PI / 2 : -Math.PI / 2;
+    const isRound = dims.shape === 'ronde';
+    const w = isRound ? dims.diameterM : dims.widthM, h = isRound ? dims.diameterM : dims.heightM;
+
+    const frameGeo = isRound ? new THREE.CylinderGeometry(w / 2 + 0.03, w / 2 + 0.03, 0.06, 32) : new THREE.BoxGeometry(0.06, h, w);
+    const frame = new THREE.Mesh(frameGeo, new THREE.MeshStandardMaterial({ color: 0x1c1a17, roughness: 0.6 }));
+    if (isRound) frame.rotation.z = Math.PI / 2;
+    frame.position.set(wallX + (side === 'west' ? 0.04 : -0.04), ART_CENTER_Y, z);
+    scene.add(frame);
+
+    const canvasGeo = isRound ? new THREE.CircleGeometry(w / 2, 40) : new THREE.PlaneGeometry(w, h);
+    const canvasMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+    const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
+    canvasMesh.position.set(wallX + inward, ART_CENTER_Y, z);
+    canvasMesh.rotation.y = rotY;
+    canvasMesh.userData = { id: artwork.id, title: artwork.titre_fr, artist: artwork.artiste, room: placement.room, wall: placement.wall };
+    scene.add(canvasMesh);
+    raycastTargets.push(canvasMesh);
+    if (artwork.image) textureLoader.load(`/assets/images/artworks/${artwork.image}`, tex => { canvasMat.map = tex; canvasMat.color.set(0xffffff); canvasMat.needsUpdate = true; });
+
+    mountSpot(wallX + (side === 'west' ? 1.6 : -1.6), z, wallX, z);
+    const dist = cameraDistanceForArtwork(dims, artwork.category, isMobile);
+    const camDist = side === 'west' ? 1 : -1;
+    return { artworkId: artwork.id, camPos: new THREE.Vector3(wallX + camDist * dist, EYE_Y, z), lookAt: new THREE.Vector3(wallX, ART_CENTER_Y, z) };
+  }
+
+  function placeOnZWallReal(entry, wallZ, xOrigin, side) {
+    const { artwork, placement } = entry;
+    const dims = getRealDimensionsMeters(artwork);
+    const x = xOrigin + placement.position_m;
+    const inward = side === 'south' ? 0.075 : -0.075;
+    const rotY = side === 'south' ? 0 : Math.PI;
+    const isRound = dims.shape === 'ronde';
+    const w = isRound ? dims.diameterM : dims.widthM, h = isRound ? dims.diameterM : dims.heightM;
+
+    const frameGeo = isRound ? new THREE.CylinderGeometry(w / 2 + 0.03, w / 2 + 0.03, 0.06, 32) : new THREE.BoxGeometry(w, h, 0.06);
+    const frame = new THREE.Mesh(frameGeo, new THREE.MeshStandardMaterial({ color: 0x1c1a17, roughness: 0.6 }));
+    if (isRound) frame.rotation.x = Math.PI / 2;
+    frame.position.set(x, ART_CENTER_Y, wallZ + (side === 'south' ? 0.04 : -0.04));
+    scene.add(frame);
+
+    const canvasGeo = isRound ? new THREE.CircleGeometry(w / 2, 40) : new THREE.PlaneGeometry(w, h);
+    const canvasMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+    const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
+    canvasMesh.position.set(x, ART_CENTER_Y, wallZ + inward);
+    canvasMesh.rotation.y = rotY;
+    canvasMesh.userData = { id: artwork.id, title: artwork.titre_fr, artist: artwork.artiste, room: placement.room, wall: placement.wall };
+    scene.add(canvasMesh);
+    raycastTargets.push(canvasMesh);
+    if (artwork.image) textureLoader.load(`/assets/images/artworks/${artwork.image}`, tex => { canvasMat.map = tex; canvasMat.color.set(0xffffff); canvasMat.needsUpdate = true; });
+
+    mountSpot(x, wallZ + (side === 'south' ? 1.6 : -1.6), x, wallZ);
+    const dist = cameraDistanceForArtwork(dims, artwork.category, isMobile);
+    const camDist = side === 'south' ? 1 : -1;
+    return { artworkId: artwork.id, camPos: new THREE.Vector3(x, EYE_Y, wallZ + camDist * dist), lookAt: new THREE.Vector3(x, ART_CENTER_Y, wallZ) };
+  }
+
+  function buildGalleryRoom(zOrigin, connecting, wallContents) {
+    const roomDepth = LONG_WALL_M + 2, roomWidth = SHORT_WALL_M + 2;
+    const xOrigin = -roomWidth / 2, zStart = zOrigin + 1;
+    const northFaceMat = connecting === 'north' ? invisibleMat : shortMat;
+    const southFaceMat = connecting === 'south' ? invisibleMat : shortMat;
+    const room = new THREE.Mesh(new THREE.BoxGeometry(roomWidth, ROOM_H, roomDepth), [longMat, longMat, ceilingMat, floorMat, northFaceMat, southFaceMat]);
+    room.position.set(0, ROOM_H / 2, zOrigin + roomDepth / 2);
+    scene.add(room);
+
+    const wallXWest = -roomWidth / 2, wallXEast = roomWidth / 2, wallZSouth = zOrigin, wallZNorth = zOrigin + roomDepth;
+    if (connecting === 'north') buildDoorway(wallZNorth, 0, xOrigin, xOrigin + roomWidth);
+    if (connecting === 'south') buildDoorway(wallZSouth, 0, xOrigin, xOrigin + roomWidth);
+
+    wallContents.west.forEach(e => allSteps.push(placeOnXWallReal(e, wallXWest, zStart, 'west')));
+    wallContents.east.forEach(e => allSteps.push(placeOnXWallReal(e, wallXEast, zStart, 'east')));
+    wallContents.south.forEach(e => allSteps.push(placeOnZWallReal(e, wallZSouth, xOrigin + 1, 'south')));
+    wallContents.north.forEach(e => allSteps.push(placeOnZWallReal(e, wallZNorth, xOrigin + 1, 'north')));
+    return { endZ: zOrigin + roomDepth };
+  }
+
+  const room1 = buildGalleryRoom(0, 'north', grouped.room1);
+  const corridorStartZ = room1.endZ, corridorEndZ = corridorStartZ + DOOR_GAP;
+  const corridorMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_SHORT, roughness: 0.85, side: THREE.BackSide });
+  const corridor = new THREE.Mesh(new THREE.BoxGeometry(DOOR_GAP, ROOM_H, DOOR_GAP), [corridorMat, corridorMat, ceilingMat, floorMat, invisibleMat, invisibleMat]);
+  corridor.position.set(0, ROOM_H / 2, corridorStartZ + DOOR_GAP / 2);
+  scene.add(corridor);
+  buildGalleryRoom(corridorEndZ, 'south', grouped.room2);
+
+  const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(raycastTargets);
+    if (hits.length > 0) {
+      const d = hits[0].object.userData;
+      alert(`${d.title}\n${d.artist}\n${d.room} — mur ${d.wall}`);
+      playing = false; updatePlayBtn();
+    }
+  });
+
+  const TRANSITION_DURATION = 3200, OBSERVE_PAUSE = 2600, AUTO_ADVANCE_INTERVAL = TRANSITION_DURATION + OBSERVE_PAUSE;
+  const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const transition = { active: false, startTime: 0, fromPos: new THREE.Vector3(), toPos: new THREE.Vector3(), fromQuat: new THREE.Quaternion(), toQuat: new THREE.Quaternion() };
+  let stepIndex = 0, playing = false;
+
+  function quaternionFor(pos, look) { const m = new THREE.Matrix4(); m.lookAt(pos, look, camera.up); return new THREE.Quaternion().setFromRotationMatrix(m); }
+
+  function goToStep(index, instant) {
+    if (allSteps.length === 0) return;
+    stepIndex = Math.max(0, Math.min(allSteps.length - 1, index));
+    const step = allSteps[stepIndex];
+    const toQuat = quaternionFor(step.camPos, step.lookAt);
+    if (instant) { camera.position.copy(step.camPos); camera.quaternion.copy(toQuat); transition.active = false; }
+    else {
+      transition.fromPos.copy(camera.position); transition.fromQuat.copy(camera.quaternion);
+      transition.toPos.copy(step.camPos); transition.toQuat.copy(toQuat);
+      transition.startTime = performance.now(); transition.active = true;
+    }
+    document.getElementById('label-left').textContent = `Œuvre ${stepIndex + 1} / ${allSteps.length} — ${step.artworkId}`;
+  }
+  if (allSteps.length > 0) goToStep(0, true);
+
+  ['btn-prev', 'btn-play', 'btn-next', 'btn-exit'].forEach(id => document.getElementById(id).disabled = false);
+  document.getElementById('btn-prev').onclick = () => goToStep(stepIndex - 1, false);
+  document.getElementById('btn-next').onclick = () => goToStep(stepIndex + 1, false);
+  document.getElementById('btn-play').onclick = () => { playing = !playing; updatePlayBtn(); };
+  document.getElementById('btn-exit').onclick = () => { playing = false; updatePlayBtn(); alert('Sortie de la visite (test).'); };
+  function updatePlayBtn() { document.getElementById('btn-play').textContent = playing ? 'Pause' : 'Play'; }
+
+  let lastAdvance = performance.now();
+  function animate(now) {
+    requestAnimationFrame(animate);
+    if (playing && now - lastAdvance > AUTO_ADVANCE_INTERVAL) {
+      goToStep(stepIndex + 1, false); lastAdvance = now;
+      if (stepIndex === allSteps.length - 1) { playing = false; updatePlayBtn(); }
+    }
+    if (transition.active) {
+      const t = Math.min(1, (now - transition.startTime) / TRANSITION_DURATION);
+      const eased = easeInOutCubic(t);
+      camera.position.lerpVectors(transition.fromPos, transition.toPos, eased);
+      camera.quaternion.slerpQuaternions(transition.fromQuat, transition.toQuat, eased);
+      if (t >= 1) transition.active = false;
+    }
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(animate);
+
+  window.addEventListener('resize', () => {
+    const w = mount.clientWidth, h = mount.clientHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+  });
+}
+
+boot();
+</script>
+
+</body>
+</html>
