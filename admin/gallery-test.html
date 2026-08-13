@@ -205,7 +205,7 @@ function initScene(grouped) {
     const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
     canvasMesh.position.set(wallX + inward, ART_CENTER_Y, z);
     canvasMesh.rotation.y = rotY;
-    canvasMesh.userData = { id: artwork.id, title: artwork.titre_fr, artist: artwork.artiste, room: placement.room, wall: placement.wall };
+    canvasMesh.userData = { id: artwork.id, title: artwork.title_fr, artist: artwork.artist, room: placement.room, wall: placement.wall };
     scene.add(canvasMesh);
     raycastTargets.push(canvasMesh);
     if (artwork.image) textureLoader.load(`/assets/images/artworks/${artwork.image}`, tex => { canvasMat.map = tex; canvasMat.color.set(0xffffff); canvasMat.needsUpdate = true; });
@@ -236,7 +236,7 @@ function initScene(grouped) {
     const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
     canvasMesh.position.set(x, ART_CENTER_Y, wallZ + inward);
     canvasMesh.rotation.y = rotY;
-    canvasMesh.userData = { id: artwork.id, title: artwork.titre_fr, artist: artwork.artiste, room: placement.room, wall: placement.wall };
+    canvasMesh.userData = { id: artwork.id, title: artwork.title_fr, artist: artwork.artist, room: placement.room, wall: placement.wall };
     scene.add(canvasMesh);
     raycastTargets.push(canvasMesh);
     if (artwork.image) textureLoader.load(`/assets/images/artworks/${artwork.image}`, tex => { canvasMat.map = tex; canvasMat.color.set(0xffffff); canvasMat.needsUpdate = true; });
