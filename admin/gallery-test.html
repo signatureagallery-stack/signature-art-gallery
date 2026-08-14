@@ -96,11 +96,32 @@ function getRealDimensionsMeters(artwork) {
   if (artwork.shape === 'ronde') { const d = (artwork.diameter_cm || 0) / 100; return { shape: 'ronde', diameterM: d, widthM: d, heightM: d }; }
   return { shape: 'rectangulaire', widthM: (artwork.width_cm || 0) / 100, heightM: (artwork.height_cm || 0) / 100 };
 }
-function cameraDistanceForArtwork(dims, category, isMobile) {
+
+// Tailles virtuelles Petit/Moyen/Grand — reprises telles quelles du prototype existant.
+const SIZE_SPECS = { petit: { w: 0.9, h: 1.2 }, moyen: { w: 1.3, h: 1.7 }, grand: { w: 1.7, h: 2.2 } };
+
+// Dimension d'AFFICHAGE (Three.js) — catégorie lue depuis artwork.category
+// (déjà calculée par la Partie 2, jamais recalculée ici). Ratio réel
+// toujours conservé exactement.
+function getVirtualDimensionsMeters(artwork) {
+  const category = artwork.category || 'moyen';
+  const spec = SIZE_SPECS[category] || SIZE_SPECS.moyen;
+  if (artwork.shape === 'ronde') {
+    const d = spec.h;
+    return { shape: 'ronde', diameterM: d, widthM: d, heightM: d, category };
+  }
+  const realW = artwork.width_cm || 0, realH = artwork.height_cm || 0;
+  if (realW === 0 || realH === 0) return { shape: 'rectangulaire', widthM: spec.w, heightM: spec.h, category, incomplete: true };
+  const virtualMax = Math.max(spec.w, spec.h), realMax = Math.max(realW, realH);
+  const scaleFactor = virtualMax / realMax;
+  return { shape: 'rectangulaire', widthM: realW * scaleFactor, heightM: realH * scaleFactor, category };
+}
+
+function cameraDistanceForArtwork(virtualDims, category, isMobile) {
   const base = isMobile ? 2.3 : 4.0;
   if (category !== 'grand') return base;
-  const refHeight = dims.shape === 'ronde' ? dims.diameterM : dims.heightM;
-  return base * (refHeight / REFERENCE_MOYEN_HEIGHT_M);
+  const refHeight = virtualDims.shape === 'ronde' ? virtualDims.diameterM : virtualDims.heightM;
+  return base * (refHeight / SIZE_SPECS.moyen.h);
 }
 
 async function boot() {
@@ -187,7 +208,7 @@ function initScene(grouped) {
 
   function placeOnXWallReal(entry, wallX, zOrigin, side) {
     const { artwork, placement } = entry;
-    const dims = getRealDimensionsMeters(artwork);
+    const dims = getVirtualDimensionsMeters(artwork);
     const z = zOrigin + placement.position_m;
     const inward = side === 'west' ? 0.075 : -0.075;
     const rotY = side === 'west' ? Math.PI / 2 : -Math.PI / 2;
@@ -218,7 +239,7 @@ function initScene(grouped) {
 
   function placeOnZWallReal(entry, wallZ, xOrigin, side) {
     const { artwork, placement } = entry;
-    const dims = getRealDimensionsMeters(artwork);
+    const dims = getVirtualDimensionsMeters(artwork);
     const x = xOrigin + placement.position_m;
     const inward = side === 'south' ? 0.075 : -0.075;
     const rotY = side === 'south' ? 0 : Math.PI;
