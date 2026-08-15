@@ -90,36 +90,14 @@
           <dd id="ov-dimensions"></dd>
           <dt id="ov-technique-label" style="display:none;">Technique</dt>
           <dd id="ov-technique" style="display:none;"></dd>
+          <dt id="ov-price-label" style="display:none;">Prix</dt>
+          <dd id="ov-price" style="display:none;"></dd>
         </dl>
         <div class="desc" id="ov-desc" style="display:none;"></div>
         <div class="location" id="ov-location"></div>
       </div>
       <div class="photo-wrap">
         <img id="ov-image" src="" alt="">
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="artwork-overlay">
-  <span class="close-btn" id="artwork-close-btn">×</span>
-  <div class="sheet">
-    <div class="sheet-inner">
-      <div class="info">
-        <div class="eyebrow">Œuvre</div>
-        <h2 id="ov-title"></h2>
-        <div class="artist" id="ov-artist"></div>
-        <dl>
-          <dt>Dimensions</dt>
-          <dd id="ov-dimensions"></dd>
-          <dt id="ov-technique-label">Technique</dt>
-          <dd id="ov-technique"></dd>
-        </dl>
-        <div class="desc" id="ov-desc"></div>
-        <div class="location" id="ov-location"></div>
-      </div>
-      <div class="photo-wrap">
-        <img id="ov-photo" alt="">
       </div>
     </div>
   </div>
@@ -217,9 +195,20 @@ function getVirtualDimensionsMeters(artwork) {
 
 function cameraDistanceForArtwork(virtualDims, category, isMobile) {
   const base = isMobile ? 2.3 : 4.0;
-  if (category !== 'grand') return base;
-  const refHeight = virtualDims.shape === 'ronde' ? virtualDims.diameterM : virtualDims.heightM;
-  return base * (refHeight / SIZE_SPECS.moyen.h);
+  let dist = base;
+  if (category === 'grand') {
+    const refHeight = virtualDims.shape === 'ronde' ? virtualDims.diameterM : virtualDims.heightM;
+    dist = base * (refHeight / SIZE_SPECS.moyen.h);
+  }
+  // Marge de sécurité uniquement pour une œuvre RONDE affichée en MOBILE :
+  // le diamètre virtuel occupait toute la hauteur de cadrage sans marge
+  // horizontale suffisante, coupant les bords du cercle. Ne touche ni aux
+  // œuvres rectangulaires, ni au cadrage desktop.
+  if (isMobile && virtualDims.shape === 'ronde') {
+    const ROUND_MOBILE_SAFETY_MARGIN = 1.35;
+    dist *= ROUND_MOBILE_SAFETY_MARGIN;
+  }
+  return dist;
 }
 
 async function boot() {
@@ -486,6 +475,17 @@ function showArtworkOverlay(d) {
   } else {
     techEl.style.display = 'none';
     techLabelEl.style.display = 'none';
+  }
+
+  const priceEl = document.getElementById('ov-price');
+  const priceLabelEl = document.getElementById('ov-price-label');
+  if (a.price_info) {
+    priceEl.textContent = a.price_info;
+    priceEl.style.display = 'block';
+    priceLabelEl.style.display = 'block';
+  } else {
+    priceEl.style.display = 'none';
+    priceLabelEl.style.display = 'none';
   }
 
   const descEl = document.getElementById('ov-desc');
