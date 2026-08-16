@@ -214,18 +214,20 @@ function cameraDistanceForArtwork(virtualDims, category, isMobile) {
 async function boot() {
   let artworks, placements;
   try {
-    const [artworksRes, placementRes] = await Promise.all([
-      fetch('/api/artworks'),
-      fetch(`/api/placement?slug=${encodeURIComponent(exhibitionSlug)}`),
-    ]);
-    if (artworksRes.status === 401 || placementRes.status === 401) {
-      throw new Error("Non connecté. Ouvrez /admin/ dans cet onglet, connectez-vous, puis revenez sur cette page.");
-    }
-    if (!artworksRes.ok || !placementRes.ok) throw new Error('Impossible de charger les données Back-office.');
-    const artworksData = await artworksRes.json();
-    const placementData = await placementRes.json();
-    artworks = artworksData.artworks || [];
-    placements = placementData.placements || [];
+    const res = await fetch(`/assets/data/expositions/${encodeURIComponent(exhibitionSlug)}.json`);
+    if (!res.ok) throw new Error("Exposition introuvable ou pas encore publiée.");
+    const data = await res.json();
+    const items = data.artworks || [];
+    // Reconstruction des deux collections attendues par le moteur (inchangé
+    // en aval) à partir du fichier public unique — aucune autre ligne du
+    // moteur n'est modifiée.
+    artworks = items.map(a => ({
+      id: a.id, title_fr: a.title_fr, artist: a.artist, technique: a.technique,
+      price_info: a.price_info, desc_fr: a.desc_fr, shape: a.shape,
+      width_cm: a.width_cm, height_cm: a.height_cm, diameter_cm: a.diameter_cm,
+      category: a.category, image: a.image,
+    }));
+    placements = items.map(a => ({ artwork_id: a.id, room: a.room, wall: a.wall, position_m: a.position_m }));
   } catch (err) {
     document.getElementById('loading-overlay').style.display = 'none';
     const errEl = document.getElementById('error-overlay');
