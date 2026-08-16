@@ -15,17 +15,9 @@ const EXHIBITIONS_DIR = path.join(ROOT, 'content', 'exhibitions');
 const EXHIBITIONS_IMAGES_SRC = path.join(ROOT, 'assets', 'images', 'expositions');
 const EXHIBITIONS_IMAGES_OUT = path.join(EXHIBITIONS_IMAGES_SRC, 'optimized');
 
-// Registre des 4 modèles de salle (Module B) — ajouter une entrée ici
-// suffit à déclarer un nouveau modèle pour le moteur de rendu générique.
-// "primary_walls" désigne les 2 murs adjacents affichés dans la vue
-// isométrique (le "coin" de salle visible) — les autres murs restent
-// consultables dans la liste détaillée en dessous.
-const ROOM_MODELS = {
-  white_cube: { label_fr: 'White Cube', label_tr: 'White Cube', primary_walls: ['nord', 'est'] },
-  industrial_loft: { label_fr: 'Industrial Loft', label_tr: 'Industrial Loft', primary_walls: [] },
-  museum_prestige: { label_fr: 'Museum Prestige', label_tr: 'Museum Prestige', primary_walls: [] },
-  contemporary_color_lab: { label_fr: 'Contemporary Color Lab', label_tr: 'Contemporary Color Lab', primary_walls: [] },
-};
+// Étape "viewer public" — lecture seule, jamais réécrits.
+const ARTWORKS_DIR = path.join(ROOT, 'content', 'artworks');
+const PUBLIC_DATA_DIR = path.join(ROOT, 'assets', 'data', 'expositions');
 
 // ---------- 1. Charger toutes les œuvres ----------
 function loadProducts() {
@@ -569,144 +561,72 @@ ${artworksBlock}
 `;
 }
 
-// ---------- Salles virtuelles — Chargement (Module B) ----------
-function loadRooms(exhibitionSlug) {
-  const dir = path.join(EXHIBITIONS_DIR, exhibitionSlug, 'rooms');
-  if (!fs.existsSync(dir)) return [];
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
-  return files.map(f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8')));
+// ---------- Viewer public — génération des données publiques (lecture seule) ----------
+// Ne réécrit JAMAIS content/artworks/*.json ni placement.json. Ne contient
+// aucun token, aucun mécanisme d'écriture. Ne conserve que les champs
+// strictement nécessaires à l'affichage dans galerie-virtuelle.html.
+function loadArtworksReadOnly() {
+  if (!fs.existsSync(ARTWORKS_DIR)) return [];
+  return fs.readdirSync(ARTWORKS_DIR)
+    .filter(f => f.endsWith('.json'))
+    .map(f => JSON.parse(fs.readFileSync(path.join(ARTWORKS_DIR, f), 'utf-8')));
 }
 
-// ---------- Salles virtuelles — Résolution œuvre (pont temporaire vers artworks[]) ----------
-// Tant que artworks/[slug].json n'existe pas encore, on résout une référence
-// de slot.artwork en comparant au nom de fichier (sans extension) du champ
-// "image" déjà présent dans exhibition.artworks[]. Aucune modification de
-// exhibition.json n'est nécessaire pour ce pont.
-function findArtworkByImageSlug(exhibition, artworkRef) {
-  if (!artworkRef) return null;
-  return (exhibition.artworks || []).find(a => {
-    if (!a.image) return false;
-    return path.parse(a.image).name === artworkRef;
-  }) || null;
+function loadPlacementReadOnly(slug) {
+  const filePath = path.join(EXHIBITIONS_DIR, slug, 'placement.json');
+  if (!fs.existsSync(filePath)) return { exhibition_slug: slug, placements: [] };
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-// ---------- Salles virtuelles — Vue isométrique (sol + 2 murs adjacents) ----------
-// Générique : ne connaît que walls[].wall_id et slots[].artwork. Le choix
-// des 2 murs affichés vient de ROOM_MODELS[model].primary_walls (repli
-// automatique sur les 2 premiers murs si non configuré pour un modèle).
-function buildIsometricHero(room) {
-  const modelInfo = ROOM_MODELS[room.model] || {};
-  const configured = modelInfo.primary_walls || [];
-  const primaryIds = configured.length >= 2 ? configured.slice(0, 2) : (room.walls || []).slice(0, 2).map(w => w.wall_id);
-
-  const wallsById = {};
-  (room.walls || []).forEach(w => { wallsById[w.wall_id] = w; });
-  const leftWall = wallsById[primaryIds[0]];
-  const rightWall = wallsById[primaryIds[1]];
-  if (!leftWall || !rightWall) return ''; // pas assez de murs pour construire la vue, dégradation propre
-
-  const markers = (wall) => (wall.slots || []).map(slot => {
-    const filled = !!slot.artwork;
-    return `<span class="room-isometric__marker ${filled ? 'room-isometric__marker--filled' : 'room-isometric__marker--empty'}"></span>`;
-  }).join('');
-
-  const pedestal = (room.pedestals && room.pedestals.length)
-    ? `<div class="room-isometric__pedestal${room.pedestals.some(p => p.artwork) ? ' room-isometric__pedestal--filled' : ''}"></div>`
-    : '';
-
-  return `  <div class="room-isometric" data-model="${room.model}">
-    <div class="room-isometric__wall room-isometric__wall--left" data-wall-id="${leftWall.wall_id}">${markers(leftWall)}</div>
-    <span class="room-isometric__wall-label room-isometric__wall-label--left">${leftWall.wall_id}</span>
-    <div class="room-isometric__wall room-isometric__wall--right" data-wall-id="${rightWall.wall_id}">${markers(rightWall)}</div>
-    <span class="room-isometric__wall-label room-isometric__wall-label--right">${rightWall.wall_id}</span>
-    <div class="room-isometric__floor">${pedestal}</div>
-  </div>`;
-}
-
-// ---------- Salles virtuelles — Gabarit générique (Module Visualisation 2.5D) ----------
-// Cette fonction est générique aux 4 modèles : elle ne connaît pas les
-// spécificités visuelles d'un modèle (ça vit dans rooms.css, section 2,
-// via [data-model="..."]) — elle se contente d'itérer sur walls[]/slots[]/
-// pedestals[] tels que fournis par le JSON de la salle. Ajouter les 3
-// autres modèles ne nécessite aucune modification de cette fonction.
-function roomPage(room, exhibition, lang) {
-  const isTR = lang === 'tr';
-  const depth = isTR ? '../../../' : '../../';
-  const backHref = `../${exhibition.slug}.html`;
-  const langSwitchHref = isTR
-    ? `../../../expositions/${exhibition.slug}/${room.slug}.html`
-    : `../../tr/expositions/${exhibition.slug}/${room.slug}.html`;
-  const roomName = isTR ? (room.name_tr || room.name) : room.name;
-  const modelInfo = ROOM_MODELS[room.model] || { label_fr: room.model, label_tr: room.model };
-  const modelLabel = isTR ? modelInfo.label_tr : modelInfo.label_fr;
-
-  const t = {
-    retour: isTR ? '← Sergiye dön' : "← Retour à l'exposition",
+function buildPublicArtworkPayload(artwork, placement) {
+  // Liste fermée de champs — rien d'autre n'est exposé publiquement.
+  return {
+    id: artwork.id,
+    title_fr: artwork.title_fr,
+    artist: artwork.artist,
+    technique: artwork.technique,
+    price_info: artwork.price_info,
+    desc_fr: artwork.desc_fr,
+    shape: artwork.shape,
+    width_cm: artwork.width_cm,
+    height_cm: artwork.height_cm,
+    diameter_cm: artwork.diameter_cm,
+    category: artwork.category,
+    image: artwork.image,
+    room: placement.room,
+    wall: placement.wall,
+    position_m: placement.position_m,
   };
+}
 
-  const wallsHtml = (room.walls || []).map(wall => {
-    const slotsHtml = (wall.slots || []).map(slot => {
-      const artwork = findArtworkByImageSlug(exhibition, slot.artwork);
-      if (!artwork) {
-        return `      <div class="room-slot room-slot--empty" data-slot-id="${slot.slot_id}"></div>`;
-      }
-      const artTitle = isTR ? (artwork.title_tr || artwork.title) : artwork.title;
-      const img = artwork.imageThumb || '';
-      return `      <div class="room-slot room-slot--filled" data-slot-id="${slot.slot_id}" data-size="${slot.display_size || 'moyen'}">
-        <div class="room-slot__frame"${img ? ` style="background-image:url('${depth}${img}')"` : ''}></div>
-        <div class="room-slot__caption">
-          <span class="room-slot__title">${artTitle}</span>
-          <span class="room-slot__artist">${artwork.artist || ''}</span>
-        </div>
-      </div>`;
-    }).join('\n');
+function generatePublicExhibitionData(exhibitions) {
+  if (!fs.existsSync(PUBLIC_DATA_DIR)) fs.mkdirSync(PUBLIC_DATA_DIR, { recursive: true });
+  const artworks = loadArtworksReadOnly();
+  const artworksById = {};
+  artworks.forEach(a => { artworksById[a.id] = a; });
 
-    return `    <div class="room-wall" data-wall-id="${wall.wall_id}">
-      <div class="room-wall__label">${wall.wall_id}</div>
-      <div class="room-wall__slots">
-${slotsHtml}
-      </div>
-    </div>`;
-  }).join('\n');
+  for (const exh of exhibitions) {
+    const placementData = loadPlacementReadOnly(exh.slug);
+    const placements = placementData.placements || [];
 
-  const pedestalsHtml = (room.pedestals || []).map(ped => {
-    const artwork = findArtworkByImageSlug(exhibition, ped.artwork);
-    const filledClass = artwork ? 'room-pedestal--filled' : 'room-pedestal--empty';
-    const label = artwork ? (isTR ? (artwork.title_tr || artwork.title) : artwork.title) : '';
-    return `    <div class="room-pedestal ${filledClass}" data-pedestal-id="${ped.pedestal_id}">${label ? `<span class="room-pedestal__label">${label}</span>` : ''}</div>`;
-  }).join('\n');
+    // Uniquement les œuvres effectivement placées ; jamais de recalcul,
+    // room/wall/position_m repris exactement tels qu'enregistrés.
+    const publicArtworks = placements
+      .filter(p => artworksById[p.artwork_id])
+      .map(p => buildPublicArtworkPayload(artworksById[p.artwork_id], p));
 
-  return `<!DOCTYPE html>
-<html lang="${lang}">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="${depth}assets/icons/favicon.ico" sizes="any"><link rel="icon" href="${depth}assets/icons/favicon.png" type="image/png"><link rel="apple-touch-icon" href="${depth}assets/icons/apple-touch-icon.png">
-<title>${roomName} — Signature Art Gallery</title>
-<link rel="stylesheet" href="${depth}assets/css/rooms.css">
-</head>
-<body>
+    const payload = {
+      exhibition_slug: exh.slug,
+      title: exh.title,
+      artworks: publicArtworks,
+    };
 
-<a class="back" href="${backHref}">${t.retour}</a>
-<a href="${langSwitchHref}" style="position:fixed; top:26px; right:6vw; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; opacity:0.6; z-index:10;">${isTR ? 'FR' : 'TR'}</a>
-
-<section class="room-header">
-  <span class="room-header__model">${modelLabel}</span>
-  <h1>${roomName}</h1>
-</section>
-
-${buildIsometricHero(room)}
-
-<section class="room-scene" data-model="${room.model}">
-${wallsHtml}
-  <div class="room-scene__pedestals">
-${pedestalsHtml}
-  </div>
-</section>
-
-</body>
-</html>
-`;
+    fs.writeFileSync(
+      path.join(PUBLIC_DATA_DIR, `${exh.slug}.json`),
+      JSON.stringify(payload, null, 2),
+      'utf-8'
+    );
+  }
 }
 
 // ---------- 4. Exécution ----------
@@ -773,20 +693,8 @@ async function main() {
     fs.writeFileSync(path.join(trExpositionsDir, `${exh.slug}.html`), exhibitionPage(exh, 'tr'), 'utf-8');
   }
 
-  console.log('→ Génération des salles (Module Visualisation 2.5D)...');
-  for (const exh of publicExhibitions) {
-    const rooms = loadRooms(exh.slug);
-    if (rooms.length === 0) continue;
-    const roomsOutDirFr = path.join(ROOT, 'expositions', exh.slug);
-    const roomsOutDirTr = path.join(ROOT, 'tr', 'expositions', exh.slug);
-    if (!fs.existsSync(roomsOutDirFr)) fs.mkdirSync(roomsOutDirFr, { recursive: true });
-    if (!fs.existsSync(roomsOutDirTr)) fs.mkdirSync(roomsOutDirTr, { recursive: true });
-    for (const room of rooms) {
-      fs.writeFileSync(path.join(roomsOutDirFr, `${room.slug}.html`), roomPage(room, exh, 'fr'), 'utf-8');
-      fs.writeFileSync(path.join(roomsOutDirTr, `${room.slug}.html`), roomPage(room, exh, 'tr'), 'utf-8');
-    }
-    console.log(`  ${rooms.length} salle(s) générée(s) pour "${exh.slug}"`);
-  }
+  console.log('→ Génération des données publiques du viewer 3D (assets/data/expositions/*.json)...');
+  generatePublicExhibitionData(publicExhibitions);
 
   console.log('✓ Build terminé.');
 }
