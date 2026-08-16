@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signature Art Gallery — Exposition virtuelle (version test)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #141210; overflow: hidden; font-family: -apple-system, sans-serif; }
+  #mount { width: 100vw; height: 100vh; }
+  #topbar { position: fixed; top: 0; left: 0; right: 0; padding: 16px 24px; display: flex; justify-content: space-between; color: rgba(255,255,255,0.7); font-family: monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; pointer-events: none; }
+  #controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+  #controls button { font-family: monospace; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: #fff; color: #0b0b0c; border: none; padding: 10px 18px; cursor: pointer; }
+  #controls button.secondary { background: rgba(255,255,255,0.9); }
+  #controls button.exit { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; margin-left: 10px; }
+  #controls button:disabled { opacity: 0.4; cursor: default; }
+  #error-overlay, #loading-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-family: monospace; font-size: 13px; text-align: center; padding: 24px; background: rgba(0,0,0,0.85); }
+  #error-overlay { display: none; color: #ff8080; }
+  #diagnostics { position: fixed; top: 60px; left: 24px; background: rgba(0,0,0,0.7); color: #fff; font-family: monospace; font-size: 10px; padding: 10px 12px; max-width: 280px; display: none; }
+  #diagnostics .missing { color: #ff8080; }
+
+  /* Fiche œuvre — overlay plein écran (remplace l'ancien alert()) */
+  #artwork-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    z-index: 50;
+    overflow-y: auto;
+  }
+  #artwork-overlay .sheet {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 6vw;
+  }
+  #artwork-overlay .sheet-inner {
+    display: flex;
+    gap: 60px;
+    max-width: 1100px;
+    width: 100%;
+    align-items: center;
+  }
+  #artwork-overlay .info { flex: 0 0 340px; color: #fff; font-family: -apple-system, sans-serif; font-weight: 300; }
+  #artwork-overlay .info .eyebrow { font-family: monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.5; margin-bottom: 14px; }
+  #artwork-overlay .info h2 { font-size: 28px; font-weight: 500; font-style: italic; margin-bottom: 6px; line-height: 1.2; }
+  #artwork-overlay .info .artist { font-size: 15px; opacity: 0.8; margin-bottom: 28px; }
+  #artwork-overlay .info dl { margin-bottom: 22px; }
+  #artwork-overlay .info dt { font-family: monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.45; margin-top: 14px; }
+  #artwork-overlay .info dd { font-size: 14px; margin-top: 4px; line-height: 1.6; opacity: 0.9; }
+  #artwork-overlay .info .desc { font-size: 13px; line-height: 1.75; opacity: 0.75; margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.15); }
+  #artwork-overlay .info .location { font-family: monospace; font-size: 10px; letter-spacing: 0.5px; opacity: 0.4; margin-top: 28px; text-transform: uppercase; }
+  #artwork-overlay .photo-wrap { flex: 1; display: flex; align-items: center; justify-content: center; max-height: 80vh; }
+  #artwork-overlay .photo-wrap img { max-width: 100%; max-height: 80vh; object-fit: contain; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); }
+  #artwork-overlay .close-btn {
+    position: fixed; top: 24px; right: 28px; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 22px; cursor: pointer; z-index: 51;
+    border: 1px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 760px) {
+    #artwork-overlay .sheet { padding: 90px 24px 40px; }
+    #artwork-overlay .sheet-inner { flex-direction: column; gap: 28px; }
+    #artwork-overlay .info { flex: none; width: 100%; }
+    #artwork-overlay .photo-wrap { max-height: 45vh; order: -1; }
+    #artwork-overlay .photo-wrap img { max-height: 45vh; }
+  }
+</style>
+</head>
+<body>
+
+<div id="mount"></div>
+<div id="loading-overlay">Chargement des données de l'exposition…</div>
+<div id="error-overlay"></div>
+<div id="diagnostics"></div>
+
+<div id="artwork-overlay">
+  <span class="close-btn" id="artwork-overlay-close">&times;</span>
+  <div class="sheet">
+    <div class="sheet-inner">
+      <div class="info">
+        <div class="eyebrow">Œuvre</div>
+        <h2 id="ov-title"></h2>
+        <div class="artist" id="ov-artist"></div>
+        <dl>
+          <dt>Dimensions</dt>
+          <dd id="ov-dimensions"></dd>
+          <dt id="ov-technique-label" style="display:none;">Technique</dt>
+          <dd id="ov-technique" style="display:none;"></dd>
+          <dt id="ov-price-label" style="display:none;">Prix</dt>
+          <dd id="ov-price" style="display:none;"></dd>
+        </dl>
+        <div class="desc" id="ov-desc" style="display:none;"></div>
+        <div class="location" id="ov-location"></div>
+      </div>
+      <div class="photo-wrap">
+        <img id="ov-image" src="" alt="">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="topbar">
+  <span id="label-left">Signature Art Gallery — Exposition virtuelle</span>
+  <span id="label-right"></span>
+</div>
+
+<div id="controls">
+  <button id="btn-prev" class="secondary" disabled>Précédent</button>
+  <button id="btn-play" disabled>Play</button>
+  <button id="btn-next" class="secondary" disabled>Suivant</button>
+  <button id="btn-exit" class="exit" disabled>Sortir</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from "three";
+
+// ============================================================================
+// Page de TEST autonome — même logique que GalleryFromBackoffice.jsx,
+// réécrite en JavaScript natif (aucun React, aucun bundler) pour pouvoir
+// être déployée telle quelle sur l'infrastructure Vercel existante
+// (générateur statique, sans étape de build front-end).
+//
+// Accès réservé : cette page appelle des API protégées (session requise).
+// Se connecter d'abord via /admin/ dans le même navigateur, puis ouvrir
+// cette page dans le même onglet (le cookie de session est partagé).
+// ============================================================================
+
+const params = new URLSearchParams(window.location.search);
+const exhibitionSlug = params.get('slug') || 'retour-a-la-couleur';
+document.getElementById('label-right').textContent = exhibitionSlug;
+
+const ROOM_ORDER = ['room1', 'room2'];
+const WALL_ORDER = ['south', 'west', 'east', 'north'];
+const LONG_WALL_M = 14, SHORT_WALL_M = 9;
+const REFERENCE_MOYEN_HEIGHT_M = 0.6;
+const EYE_Y = 1.7, ART_CENTER_Y = EYE_Y + 0.15, ROOM_H = 5;
+const WALL_COLOR_LONG = 0x1a2f8f, WALL_COLOR_SHORT = 0xdccbaf;
+const DOOR_GAP = 2.2, DOOR_HEIGHT = 2.6;
+
+function resolveArtwork(artworks, id) { return artworks.find(a => a.id === id) || null; }
+function compareByVisitOrder(a, b) {
+  const ra = ROOM_ORDER.indexOf(a.room), rb = ROOM_ORDER.indexOf(b.room);
+  if (ra !== rb) return ra - rb;
+  const wa = WALL_ORDER.indexOf(a.wall), wb = WALL_ORDER.indexOf(b.wall);
+  if (wa !== wb) return wa - wb;
+  return a.position_m - b.position_m;
+}
+function buildWallContents(placements, artworks) {
+  const grouped = { room1: { south: [], west: [], east: [], north: [] }, room2: { south: [], west: [], east: [], north: [] } };
+  const missing = [];
+  [...placements].sort(compareByVisitOrder).forEach(p => {
+    if (!grouped[p.room] || !grouped[p.room][p.wall]) return;
+    const artwork = resolveArtwork(artworks, p.artwork_id);
+    if (!artwork) { missing.push(p.artwork_id); return; }
+    grouped[p.room][p.wall].push({ placement: p, artwork });
+  });
+  return { grouped, missing };
+}
+function getRealDimensionsMeters(artwork) {
+  if (artwork.shape === 'ronde') { const d = (artwork.diameter_cm || 0) / 100; return { shape: 'ronde', diameterM: d, widthM: d, heightM: d }; }
+  return { shape: 'rectangulaire', widthM: (artwork.width_cm || 0) / 100, heightM: (artwork.height_cm || 0) / 100 };
+}
+
+// Tailles virtuelles Petit/Moyen/Grand — reprises telles quelles du prototype existant.
+const SIZE_SPECS = { petit: { w: 0.9, h: 1.2 }, moyen: { w: 1.3, h: 1.7 }, grand: { w: 1.7, h: 2.2 } };
+
+// Dimension d'AFFICHAGE (Three.js) — catégorie lue depuis artwork.category
+// (déjà calculée par la Partie 2, jamais recalculée ici). Ratio réel
+// toujours conservé exactement.
+function getVirtualDimensionsMeters(artwork) {
+  const category = artwork.category || 'moyen';
+  const spec = SIZE_SPECS[category] || SIZE_SPECS.moyen;
+  if (artwork.shape === 'ronde') {
+    const d = spec.h;
+    return { shape: 'ronde', diameterM: d, widthM: d, heightM: d, category };
+  }
+  const realW = artwork.width_cm || 0, realH = artwork.height_cm || 0;
+  if (realW === 0 || realH === 0) return { shape: 'rectangulaire', widthM: spec.w, heightM: spec.h, category, incomplete: true };
+  const virtualMax = Math.max(spec.w, spec.h), realMax = Math.max(realW, realH);
+  const scaleFactor = virtualMax / realMax;
+  return { shape: 'rectangulaire', widthM: realW * scaleFactor, heightM: realH * scaleFactor, category };
+}
+
+function cameraDistanceForArtwork(virtualDims, category, isMobile) {
+  const base = isMobile ? 2.3 : 4.0;
+  let dist = base;
+  if (category === 'grand') {
+    const refHeight = virtualDims.shape === 'ronde' ? virtualDims.diameterM : virtualDims.heightM;
+    dist = base * (refHeight / SIZE_SPECS.moyen.h);
+  }
+  // Marge de sécurité uniquement pour une œuvre RONDE affichée en MOBILE :
+  // le diamètre virtuel occupait toute la hauteur de cadrage sans marge
+  // horizontale suffisante, coupant les bords du cercle. Ne touche ni aux
+  // œuvres rectangulaires, ni au cadrage desktop.
+  if (isMobile && virtualDims.shape === 'ronde') {
+    const ROUND_MOBILE_SAFETY_MARGIN = 1.60;
+    dist *= ROUND_MOBILE_SAFETY_MARGIN;
+  }
+  return dist;
+}
+
+async function boot() {
+  let artworks, placements;
+  try {
+    const [artworksRes, placementRes] = await Promise.all([
+      fetch('/api/artworks'),
+      fetch(`/api/placement?slug=${encodeURIComponent(exhibitionSlug)}`),
+    ]);
+    if (artworksRes.status === 401 || placementRes.status === 401) {
+      throw new Error("Non connecté. Ouvrez /admin/ dans cet onglet, connectez-vous, puis revenez sur cette page.");
+    }
+    if (!artworksRes.ok || !placementRes.ok) throw new Error('Impossible de charger les données Back-office.');
+    const artworksData = await artworksRes.json();
+    const placementData = await placementRes.json();
+    artworks = artworksData.artworks || [];
+    placements = placementData.placements || [];
+  } catch (err) {
+    document.getElementById('loading-overlay').style.display = 'none';
+    const errEl = document.getElementById('error-overlay');
+    errEl.textContent = 'Erreur : ' + err.message;
+    errEl.style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('loading-overlay').style.display = 'none';
+  const { grouped, missing } = buildWallContents(placements, artworks);
+  const diagEl = document.getElementById('diagnostics');
+  diagEl.style.display = 'block';
+  diagEl.innerHTML = `Placements : ${placements.length - missing.length}/${placements.length} résolus` +
+    (missing.length ? `<div class="missing">Orphelins : ${missing.join(', ')}</div>` : '');
+
+  initScene(grouped);
+}
+
+function initScene(grouped) {
+  const mount = document.getElementById('mount');
+  const width = mount.clientWidth, height = mount.clientHeight;
+  const isMobile = window.innerWidth < 768;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x141210);
+  const camera = new THREE.PerspectiveCamera(isMobile ? 44 : 55, width / height, 0.1, 200);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(width, height);
+  mount.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  scene.add(new THREE.HemisphereLight(0xf3ead9, 0x2a2a2a, 0.35));
+
+  const textureLoader = new THREE.TextureLoader();
+  const raycastTargets = [];
+  const allSteps = [];
+
+  const longMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_LONG, roughness: 0.85, side: THREE.BackSide });
+  const shortMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_SHORT, roughness: 0.85, side: THREE.BackSide });
+  const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xe4e0d5, roughness: 1, side: THREE.BackSide });
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0x6b6357, roughness: 0.6, side: THREE.BackSide });
+  const invisibleMat = new THREE.MeshBasicMaterial({ visible: false });
+
+  function mountSpot(x, z, wallX, wallZ) {
+    const spot = new THREE.SpotLight(0xfff2cf, 3.2, 6, Math.PI / 7, 0.6, 1.4);
+    spot.position.set(x, ROOM_H - 0.3, z);
+    spot.target.position.set(wallX, ART_CENTER_Y, wallZ);
+    scene.add(spot, spot.target);
+    const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.1, 10), new THREE.MeshStandardMaterial({ color: 0x2a2824 }));
+    fixture.position.set(x, ROOM_H - 0.25, z);
+    scene.add(fixture);
+  }
+
+  function buildDoorway(wallZ, doorWorldX, xStart, xEnd) {
+    const leftWidth = doorWorldX - DOOR_GAP / 2 - xStart;
+    const rightWidth = xEnd - (doorWorldX + DOOR_GAP / 2);
+    const jambMat = new THREE.MeshStandardMaterial({ color: 0x1c1a17, roughness: 0.6 });
+    const segMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_SHORT, roughness: 0.85, side: THREE.DoubleSide });
+    if (leftWidth > 0.05) { const l = new THREE.Mesh(new THREE.PlaneGeometry(leftWidth, ROOM_H), segMat); l.position.set(xStart + leftWidth / 2, ROOM_H / 2, wallZ); scene.add(l); }
+    if (rightWidth > 0.05) { const r = new THREE.Mesh(new THREE.PlaneGeometry(rightWidth, ROOM_H), segMat); r.position.set(doorWorldX + DOOR_GAP / 2 + rightWidth / 2, ROOM_H / 2, wallZ); scene.add(r); }
+    const header = new THREE.Mesh(new THREE.PlaneGeometry(DOOR_GAP, ROOM_H - DOOR_HEIGHT), segMat);
+    header.position.set(doorWorldX, DOOR_HEIGHT + (ROOM_H - DOOR_HEIGHT) / 2, wallZ);
+    scene.add(header);
+    [-1, 1].forEach(side => { const j = new THREE.Mesh(new THREE.BoxGeometry(0.08, DOOR_HEIGHT, 0.16), jambMat); j.position.set(doorWorldX + side * (DOOR_GAP / 2), DOOR_HEIGHT / 2, wallZ); scene.add(j); });
+  }
+
+  function placeOnXWallReal(entry, wallX, zOrigin, side) {
+    const { artwork, placement } = entry;
+    const dims = getVirtualDimensionsMeters(artwork);
+    const z = zOrigin + placement.position_m;
+    const inward = side === 'west' ? 0.075 : -0.075;
+    const rotY = side === 'west' ? Math.PI / 2 : -Math.PI / 2;
+    const isRound = dims.shape === 'ronde';
+    const w = isRound ? dims.diameterM : dims.widthM, h = isRound ? dims.diameterM : dims.heightM;
+
+    const frameGeo = isRound ? new THREE.CylinderGeometry(w / 2 + 0.03, w / 2 + 0.03, 0.06, 32) : new THREE.BoxGeometry(0.06, h, w);
+    const frame = new THREE.Mesh(frameGeo, new THREE.MeshStandardMaterial({ color: 0x1c1a17, roughness: 0.6 }));
+    if (isRound) frame.rotation.z = Math.PI / 2;
+    frame.position.set(wallX + (side === 'west' ? 0.04 : -0.04), ART_CENTER_Y, z);
+    scene.add(frame);
+
+    const canvasGeo = isRound ? new THREE.CircleGeometry(w / 2, 40) : new THREE.PlaneGeometry(w, h);
+    const canvasMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+    const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
+    canvasMesh.position.set(wallX + inward, ART_CENTER_Y, z);
+    canvasMesh.rotation.y = rotY;
+    canvasMesh.userData = { artwork, room: placement.room, wall: placement.wall };
+    scene.add(canvasMesh);
+    raycastTargets.push(canvasMesh);
+    if (artwork.image) textureLoader.load(`/assets/images/artworks/${artwork.image}`, tex => { canvasMat.map = tex; canvasMat.color.set(0xffffff); canvasMat.needsUpdate = true; });
+
+    mountSpot(wallX + (side === 'west' ? 1.6 : -1.6), z, wallX, z);
+    const dist = cameraDistanceForArtwork(dims, artwork.category, isMobile);
+    const camDist = side === 'west' ? 1 : -1;
+    return { artworkId: artwork.id, camPos: new THREE.Vector3(wallX + camDist * dist, EYE_Y, z), lookAt: new THREE.Vector3(wallX, ART_CENTER_Y, z) };
+  }
+
+  function placeOnZWallReal(entry, wallZ, xOrigin, side) {
+    const { artwork, placement } = entry;
+    const dims = getVirtualDimensionsMeters(artwork);
+    const x = xOrigin + placement.position_m;
+    const inward = side === 'south' ? 0.075 : -0.075;
+    const rotY = side === 'south' ? 0 : Math.PI;
+    const isRound = dims.shape === 'ronde';
+    const w = isRound ? dims.diameterM : dims.widthM, h = isRound ? dims.diameterM : dims.heightM;
+
+    const frameGeo = isRound ? new THREE.CylinderGeometry(w / 2 + 0.03, w / 2 + 0.03, 0.06, 32) : new THREE.BoxGeometry(w, h, 0.06);
+    const frame = new THREE.Mesh(frameGeo, new THREE.MeshStandardMaterial({ color: 0x1c1a17, roughness: 0.6 }));
+    if (isRound) frame.rotation.x = Math.PI / 2;
+    frame.position.set(x, ART_CENTER_Y, wallZ + (side === 'south' ? 0.04 : -0.04));
+    scene.add(frame);
+
+    const canvasGeo = isRound ? new THREE.CircleGeometry(w / 2, 40) : new THREE.PlaneGeometry(w, h);
+    const canvasMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+    const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
+    canvasMesh.position.set(x, ART_CENTER_Y, wallZ + inward);
+    canvasMesh.rotation.y = rotY;
+    canvasMesh.userData = { artwork, room: placement.room, wall: placement.wall };
+    scene.add(canvasMesh);
+    raycastTargets.push(canvasMesh);
+    if (artwork.image) textureLoader.load(`/assets/images/artworks/${artwork.image}`, tex => { canvasMat.map = tex; canvasMat.color.set(0xffffff); canvasMat.needsUpdate = true; });
+
+    mountSpot(x, wallZ + (side === 'south' ? 1.6 : -1.6), x, wallZ);
+    const dist = cameraDistanceForArtwork(dims, artwork.category, isMobile);
+    const camDist = side === 'south' ? 1 : -1;
+    return { artworkId: artwork.id, camPos: new THREE.Vector3(x, EYE_Y, wallZ + camDist * dist), lookAt: new THREE.Vector3(x, ART_CENTER_Y, wallZ) };
+  }
+
+  function buildGalleryRoom(zOrigin, connecting, wallContents) {
+    const roomDepth = LONG_WALL_M + 2, roomWidth = SHORT_WALL_M + 2;
+    const xOrigin = -roomWidth / 2, zStart = zOrigin + 1;
+    const northFaceMat = connecting === 'north' ? invisibleMat : shortMat;
+    const southFaceMat = connecting === 'south' ? invisibleMat : shortMat;
+    const room = new THREE.Mesh(new THREE.BoxGeometry(roomWidth, ROOM_H, roomDepth), [longMat, longMat, ceilingMat, floorMat, northFaceMat, southFaceMat]);
+    room.position.set(0, ROOM_H / 2, zOrigin + roomDepth / 2);
+    scene.add(room);
+
+    const wallXWest = -roomWidth / 2, wallXEast = roomWidth / 2, wallZSouth = zOrigin, wallZNorth = zOrigin + roomDepth;
+    if (connecting === 'north') buildDoorway(wallZNorth, 0, xOrigin, xOrigin + roomWidth);
+    if (connecting === 'south') buildDoorway(wallZSouth, 0, xOrigin, xOrigin + roomWidth);
+
+    wallContents.west.forEach(e => allSteps.push(placeOnXWallReal(e, wallXWest, zStart, 'west')));
+    wallContents.east.forEach(e => allSteps.push(placeOnXWallReal(e, wallXEast, zStart, 'east')));
+    wallContents.south.forEach(e => allSteps.push(placeOnZWallReal(e, wallZSouth, xOrigin + 1, 'south')));
+    wallContents.north.forEach(e => allSteps.push(placeOnZWallReal(e, wallZNorth, xOrigin + 1, 'north')));
+    return { endZ: zOrigin + roomDepth };
+  }
+
+  const room1 = buildGalleryRoom(0, 'north', grouped.room1);
+  const corridorStartZ = room1.endZ, corridorEndZ = corridorStartZ + DOOR_GAP;
+  const corridorMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR_SHORT, roughness: 0.85, side: THREE.BackSide });
+  const corridor = new THREE.Mesh(new THREE.BoxGeometry(DOOR_GAP, ROOM_H, DOOR_GAP), [corridorMat, corridorMat, ceilingMat, floorMat, invisibleMat, invisibleMat]);
+  corridor.position.set(0, ROOM_H / 2, corridorStartZ + DOOR_GAP / 2);
+  scene.add(corridor);
+  buildGalleryRoom(corridorEndZ, 'south', grouped.room2);
+
+  const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(raycastTargets);
+    if (hits.length > 0) {
+      const d = hits[0].object.userData;
+      showArtworkOverlay(d);
+      playing = false; updatePlayBtn();
+    }
+  });
+
+  const TRANSITION_DURATION = 3200, OBSERVE_PAUSE = 2600, AUTO_ADVANCE_INTERVAL = TRANSITION_DURATION + OBSERVE_PAUSE;
+  const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const transition = { active: false, startTime: 0, fromPos: new THREE.Vector3(), toPos: new THREE.Vector3(), fromQuat: new THREE.Quaternion(), toQuat: new THREE.Quaternion() };
+  let stepIndex = 0, playing = false;
+
+  function quaternionFor(pos, look) { const m = new THREE.Matrix4(); m.lookAt(pos, look, camera.up); return new THREE.Quaternion().setFromRotationMatrix(m); }
+
+  function goToStep(index, instant) {
+    if (allSteps.length === 0) return;
+    stepIndex = Math.max(0, Math.min(allSteps.length - 1, index));
+    const step = allSteps[stepIndex];
+    const toQuat = quaternionFor(step.camPos, step.lookAt);
+    if (instant) { camera.position.copy(step.camPos); camera.quaternion.copy(toQuat); transition.active = false; }
+    else {
+      transition.fromPos.copy(camera.position); transition.fromQuat.copy(camera.quaternion);
+      transition.toPos.copy(step.camPos); transition.toQuat.copy(toQuat);
+      transition.startTime = performance.now(); transition.active = true;
+    }
+    document.getElementById('label-left').textContent = `Œuvre ${stepIndex + 1} / ${allSteps.length} — ${step.artworkId}`;
+  }
+  if (allSteps.length > 0) goToStep(0, true);
+
+  ['btn-prev', 'btn-play', 'btn-next', 'btn-exit'].forEach(id => document.getElementById(id).disabled = false);
+  document.getElementById('btn-prev').onclick = () => goToStep(stepIndex - 1, false);
+  document.getElementById('btn-next').onclick = () => goToStep(stepIndex + 1, false);
+  document.getElementById('btn-play').onclick = () => { playing = !playing; updatePlayBtn(); };
+  document.getElementById('btn-exit').onclick = () => { playing = false; updatePlayBtn(); alert('Sortie de la visite (test).'); };
+  function updatePlayBtn() { document.getElementById('btn-play').textContent = playing ? 'Pause' : 'Play'; }
+
+  let lastAdvance = performance.now();
+  function animate(now) {
+    requestAnimationFrame(animate);
+    if (playing && now - lastAdvance > AUTO_ADVANCE_INTERVAL) {
+      goToStep(stepIndex + 1, false); lastAdvance = now;
+      if (stepIndex === allSteps.length - 1) { playing = false; updatePlayBtn(); }
+    }
+    if (transition.active) {
+      const t = Math.min(1, (now - transition.startTime) / TRANSITION_DURATION);
+      const eased = easeInOutCubic(t);
+      camera.position.lerpVectors(transition.fromPos, transition.toPos, eased);
+      camera.quaternion.slerpQuaternions(transition.fromQuat, transition.toQuat, eased);
+      if (t >= 1) transition.active = false;
+    }
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(animate);
+
+  window.addEventListener('resize', () => {
+    const w = mount.clientWidth, h = mount.clientHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+  });
+}
+
+// Fiche œuvre — overlay plein écran (remplace alert()). Utilise
+// exclusivement les champs réels du back-office : artist, title_fr,
+// width_cm, height_cm, diameter_cm, technique, desc_fr, image.
+const ROOM_LABEL_FR = { room1: 'Salle 1', room2: 'Salle 2' };
+const WALL_LABEL_FR = { south: 'Sud', west: 'Ouest', east: 'Est', north: 'Nord' };
+
+function showArtworkOverlay(d) {
+  const a = d.artwork;
+  document.getElementById('ov-title').textContent = a.title_fr || '';
+  document.getElementById('ov-artist').textContent = a.artist || '';
+
+  const dims = a.shape === 'ronde'
+    ? `⌀ ${a.diameter_cm} cm`
+    : `${a.width_cm} × ${a.height_cm} cm`;
+  document.getElementById('ov-dimensions').textContent = dims;
+
+  const techEl = document.getElementById('ov-technique');
+  const techLabelEl = document.getElementById('ov-technique-label');
+  if (a.technique) {
+    techEl.textContent = a.technique;
+    techEl.style.display = 'block';
+    techLabelEl.style.display = 'block';
+  } else {
+    techEl.style.display = 'none';
+    techLabelEl.style.display = 'none';
+  }
+
+  const priceEl = document.getElementById('ov-price');
+  const priceLabelEl = document.getElementById('ov-price-label');
+  if (a.price_info) {
+    priceEl.textContent = a.price_info;
+    priceEl.style.display = 'block';
+    priceLabelEl.style.display = 'block';
+  } else {
+    priceEl.style.display = 'none';
+    priceLabelEl.style.display = 'none';
+  }
+
+  const descEl = document.getElementById('ov-desc');
+  if (a.desc_fr) { descEl.textContent = a.desc_fr; descEl.style.display = 'block'; }
+  else { descEl.style.display = 'none'; }
+
+  document.getElementById('ov-location').textContent =
+    `${ROOM_LABEL_FR[d.room] || d.room} — mur ${WALL_LABEL_FR[d.wall] || d.wall}`;
+
+  const imgEl = document.getElementById('ov-image');
+  imgEl.src = a.image ? `/assets/images/artworks/${a.image}` : '';
+  imgEl.alt = a.title_fr || '';
+
+  document.getElementById('artwork-overlay').style.display = 'block';
+}
+
+function closeArtworkOverlay() {
+  document.getElementById('artwork-overlay').style.display = 'none';
+}
+document.getElementById('artwork-overlay-close').addEventListener('click', closeArtworkOverlay);
+document.getElementById('artwork-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'artwork-overlay') closeArtworkOverlay();
+});
+
+boot();
+</script>
+
+</body>
+</html>
