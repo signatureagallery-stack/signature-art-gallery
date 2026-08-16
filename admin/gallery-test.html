@@ -205,7 +205,7 @@ function cameraDistanceForArtwork(virtualDims, category, isMobile) {
   // horizontale suffisante, coupant les bords du cercle. Ne touche ni aux
   // œuvres rectangulaires, ni au cadrage desktop.
   if (isMobile && virtualDims.shape === 'ronde') {
-    const ROUND_MOBILE_SAFETY_MARGIN = 1.35;
+    const ROUND_MOBILE_SAFETY_MARGIN = 1.60;
     dist *= ROUND_MOBILE_SAFETY_MARGIN;
   }
   return dist;
