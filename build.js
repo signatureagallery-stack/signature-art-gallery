@@ -439,6 +439,7 @@ function exhibitionIndexPage(exhibitions, lang) {
     archived: isTR ? 'Geçmiş' : 'Passée',
     ongoing: isTR ? 'Devam Ediyor' : 'En cours',
     no_exhibitions: isTR ? 'Şu anda sergi bulunmuyor.' : 'Aucune exposition pour le moment.',
+    visit: isTR ? 'Sergiyi Ziyaret Et' : "Visiter l'exposition",
   };
 
   // Seules les expositions publiées apparaissent sur le site public (jamais les brouillons)
@@ -454,14 +455,21 @@ function exhibitionIndexPage(exhibitions, lang) {
     const dates = `${exh.date_start} — ${exh.date_end}`;
     const href = `expositions/${exh.slug}.html`;
     const cover = exh.coverThumb || '';
-    return `  <a class="exhibition-card" href="${href}">
-    <div class="exhibition-card__image"${cover ? ` style="background-image:url('${depth}${cover}')"` : ''}></div>
-    <div class="exhibition-card__body">
-      <span class="exhibition-card__status exhibition-card__status--${exh.status}">${statusLabel(exh.status)}</span>
-      <div class="exhibition-card__title">${title}</div>
-      <div class="exhibition-card__dates">${dates}</div>
-    </div>
-  </a>`;
+    // Bouton "Visiter l'exposition" (viewer 3D) — uniquement si un
+    // placement exploitable existe pour cette exposition.
+    const galleryBtn = hasExploitablePlacement(exh.slug)
+      ? `\n    <a href="${depth}galerie-virtuelle.html?slug=${exh.slug}" style="display:inline-block; margin-top:12px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#e2087a; border:1px solid #e2087a; padding:7px 14px;">${t.visit}</a>`
+      : '';
+    return `  <div class="exhibition-card">
+    <a href="${href}">
+      <div class="exhibition-card__image"${cover ? ` style="background-image:url('${depth}${cover}')"` : ''}></div>
+      <div class="exhibition-card__body">
+        <span class="exhibition-card__status exhibition-card__status--${exh.status}">${statusLabel(exh.status)}</span>
+        <div class="exhibition-card__title">${title}</div>
+        <div class="exhibition-card__dates">${dates}</div>
+      </div>
+    </a>${galleryBtn}
+  </div>`;
   }).join('\n');
 
   const gridOrEmpty = publicExhibitions.length
@@ -576,6 +584,14 @@ function loadPlacementReadOnly(slug) {
   const filePath = path.join(EXHIBITIONS_DIR, slug, 'placement.json');
   if (!fs.existsSync(filePath)) return { exhibition_slug: slug, placements: [] };
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+}
+
+// Réutilisé pour la page publique des expositions (bouton "Visiter
+// l'exposition") — un placement est exploitable s'il existe et contient
+// au moins une œuvre effectivement placée.
+function hasExploitablePlacement(slug) {
+  const data = loadPlacementReadOnly(slug);
+  return Array.isArray(data.placements) && data.placements.length > 0;
 }
 
 function buildPublicArtworkPayload(artwork, placement) {
