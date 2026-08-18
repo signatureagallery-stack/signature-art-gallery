@@ -425,7 +425,12 @@ function initScene(grouped) {
   document.getElementById('btn-prev').onclick = () => goToStep(stepIndex - 1, false);
   document.getElementById('btn-next').onclick = () => goToStep(stepIndex + 1, false);
   document.getElementById('btn-play').onclick = () => { playing = !playing; updatePlayBtn(); };
-  document.getElementById('btn-exit').onclick = () => { playing = false; updatePlayBtn(); alert('Sortie de la visite (test).'); };
+  document.getElementById('btn-exit').onclick = () => {
+    playing = false; updatePlayBtn();
+    if (confirm('Quitter la visite et revenir à la liste des expositions ?')) {
+      window.location.href = 'expositions.html';
+    }
+  };
   function updatePlayBtn() { document.getElementById('btn-play').textContent = playing ? 'Pause' : 'Play'; }
 
   let lastAdvance = performance.now();
