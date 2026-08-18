@@ -18,6 +18,12 @@
       "room": "room1",
       "wall": "west",
       "position_m": 0.66
+    },
+    {
+      "artwork_id": "art-msyjyrat-4w8v",
+      "room": "room1",
+      "wall": "west",
+      "position_m": 3.46
     }
   ]
 }
