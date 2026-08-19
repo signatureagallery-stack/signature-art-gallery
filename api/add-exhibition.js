@@ -25,7 +25,11 @@ async function handler(req, res) {
     // Plafond relevé par rapport à add-artwork.js : un fichier audio est
     // généralement plus volumineux qu'une image. Même mécanisme (formidable),
     // pas de nouveau système.
-    const form = formidable({ maxFileSize: 30 * 1024 * 1024 }); // 30 Mo max en entrée
+    // allowEmptyFiles: true — nécessaire car le champ audio (facultatif)
+    // envoie un fichier vide (0 octet) quand rien n'est sélectionné ;
+    // sans ça, formidable rejette l'intégralité du formulaire avant même
+    // d'atteindre la vérification "audio fourni ou non" ci-dessous.
+    const form = formidable({ maxFileSize: 30 * 1024 * 1024, allowEmptyFiles: true }); // 30 Mo max en entrée
     const [fields, files] = await form.parse(req);
 
     const get = (f) => (Array.isArray(fields[f]) ? fields[f][0] : fields[f]) || '';
@@ -92,7 +96,7 @@ async function handler(req, res) {
     const audioFile = Array.isArray(files.audio) ? files.audio[0] : files.audio;
     let audioFileName = null;
 
-    if (audioFile) {
+    if (audioFile && audioFile.size > 0) {
       const ALLOWED_AUDIO_EXT = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
       const originalName = audioFile.originalFilename || '';
       const ext = originalName.includes('.') ? originalName.split('.').pop().toLowerCase() : '';
