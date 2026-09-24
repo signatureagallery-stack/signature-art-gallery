@@ -433,7 +433,7 @@ function exhibitionIndexPage(exhibitions, lang) {
 
   const t = {
     title: isTR ? 'Sergiler' : 'Expositions',
-    heading: isTR ? 'Sanal Sergiler' : 'Expositions virtuelles',
+    heading: isTR ? 'Sergilerimiz' : 'Nos expositions',
     retour: isTR ? '← Geri' : '← Retour',
     instagram: 'Instagram ↗',
     archived: isTR ? 'Geçmiş' : 'Passée',
