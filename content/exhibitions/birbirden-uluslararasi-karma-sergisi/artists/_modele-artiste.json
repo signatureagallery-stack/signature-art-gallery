@@ -1,1 +1,27 @@
-
+{
+  "name": "Prénom Nom",
+  "country": "Pays",
+  "country_tr": "Ülke",
+  "poster": "prenom-nom-afis.jpg",
+  "order": 1,
+  "bio_fr": "Biographie en français.",
+  "bio_tr": "Türkçe biyografi.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "titre-de-l-oeuvre",
+      "title": "Titre de l'œuvre",
+      "title_tr": "Eserin adı",
+      "image": "prenom-nom-01.jpg",
+      "year": "2025",
+      "dimensions": "80 × 100 cm",
+      "technique": "Huile sur toile",
+      "technique_tr": "Tuval üzerine yağlıboya",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "25.000 TL",
+      "status": "disponible"
+    }
+  ]
+}
