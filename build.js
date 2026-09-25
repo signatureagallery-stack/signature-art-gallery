@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-
+const birbirden = require('./birbirden-build');
 const ROOT = __dirname;
 const PRODUCTS_DIR = path.join(ROOT, 'content', 'products');
 const IMAGES_SRC = path.join(ROOT, 'assets', 'images', 'boutique');
@@ -453,8 +453,7 @@ function exhibitionIndexPage(exhibitions, lang) {
   const cards = publicExhibitions.map(exh => {
     const title = isTR ? (exh.title_tr || exh.title) : exh.title;
     const dates = `${exh.date_start} — ${exh.date_end}`;
-    const href = `expositions/${exh.slug}.html`;
-    const cover = exh.coverThumb || '';
+    const href = birbirden.hasArtists(ROOT, exh.slug) ? `expositions/${exh.slug}/` : `expositions/${exh.slug}.html`;    const cover = exh.coverThumb || '';
     // Bouton "Visiter l'exposition" (viewer 3D) — uniquement si un
     // placement exploitable existe pour cette exposition.
     const galleryBtn = hasExploitablePlacement(exh.slug)
@@ -696,8 +695,7 @@ async function main() {
   fs.writeFileSync(path.join(ROOT, 'tr', 'expositions.html'), exhibitionIndexPage(exhibitions, 'tr'), 'utf-8');
 
   console.log('→ Génération des pages exposition (FR)...');
-  const publicExhibitions = exhibitions.filter(e => e.status !== 'brouillon');
-  if (!fs.existsSync(path.join(ROOT, 'expositions'))) fs.mkdirSync(path.join(ROOT, 'expositions'));
+  const publicExhibitions = exhibitions.filter(e => e.status !== 'brouillon' && !birbirden.hasArtists(ROOT, e.slug));  if (!fs.existsSync(path.join(ROOT, 'expositions'))) fs.mkdirSync(path.join(ROOT, 'expositions'));
   for (const exh of publicExhibitions) {
     fs.writeFileSync(path.join(ROOT, 'expositions', `${exh.slug}.html`), exhibitionPage(exh, 'fr'), 'utf-8');
   }
@@ -712,6 +710,7 @@ async function main() {
   console.log('→ Génération des données publiques du viewer 3D (assets/data/expositions/*.json)...');
   generatePublicExhibitionData(publicExhibitions);
 
+    await birbirden.build({ ROOT, exhibitions });
   console.log('✓ Build terminé.');
 }
 
