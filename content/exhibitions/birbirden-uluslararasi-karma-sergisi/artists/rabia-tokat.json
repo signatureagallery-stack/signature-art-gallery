@@ -1,0 +1,27 @@
+{
+  "name": "Rabia Tokat",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "rabia-tokat-afis.png",
+  "order": 17,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "rabia-tokat-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

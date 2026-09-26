@@ -1,0 +1,27 @@
+{
+  "name": "Raphael Gaudin",
+  "country": "France",
+  "country_tr": "Fransa",
+  "poster": "raphael-gaudin-afis.png",
+  "order": 18,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "raphael-gaudin-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

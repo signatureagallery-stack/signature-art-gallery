@@ -1,0 +1,27 @@
+{
+  "name": "Yasemin Kaya Moore",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "yasemin-kaya-moore-afis.png",
+  "order": 25,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "yasemin-kaya-moore-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

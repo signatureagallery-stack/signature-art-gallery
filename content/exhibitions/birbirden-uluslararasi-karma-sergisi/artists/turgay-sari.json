@@ -1,0 +1,27 @@
+{
+  "name": "Turgay Sarı",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "turgay-sari-afis.png",
+  "order": 22,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "turgay-sari-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

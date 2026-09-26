@@ -1,0 +1,27 @@
+{
+  "name": "Uğur Akın",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "ugur-akin-afis.png",
+  "order": 23,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "ugur-akin-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

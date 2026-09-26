@@ -1,0 +1,27 @@
+{
+  "name": "Nadine El Kaffel",
+  "country": "Tunisie",
+  "country_tr": "Tunus",
+  "poster": "nadine-el-kaffel-afis.png",
+  "order": 15,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "nadine-el-kaffel-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Arzu Tüybek",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "arzu-tuybek-afis.jpeg",
+  "order": 2,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "arzu-tuybek-afis.jpeg",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

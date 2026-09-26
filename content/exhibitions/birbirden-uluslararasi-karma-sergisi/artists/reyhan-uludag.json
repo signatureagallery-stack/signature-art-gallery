@@ -1,0 +1,27 @@
+{
+  "name": "Prof. Reyhan Uludağ",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "reyhan-uludag-afis.png",
+  "order": 1,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "reyhan-uludag-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}

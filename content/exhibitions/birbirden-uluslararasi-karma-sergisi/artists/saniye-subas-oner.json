@@ -1,0 +1,27 @@
+{
+  "name": "Saniye Subaş Öner",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "saniye-subas-oner-afis.png",
+  "order": 19,
+  "bio_fr": "Biographie à compléter.",
+  "bio_tr": "Biyografi eklenecek.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "sans-titre-i",
+      "title": "Sans titre",
+      "title_tr": "İsimsiz",
+      "image": "saniye-subas-oner-afis.png",
+      "year": "",
+      "dimensions": "",
+      "technique": "",
+      "technique_tr": "",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "",
+      "status": "disponible"
+    }
+  ]
+}
