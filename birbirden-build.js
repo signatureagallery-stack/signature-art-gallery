@@ -29,13 +29,13 @@ const T = {
   fr: {
     artists: 'Les artistes', works: 'Œuvres présentées dans BİRBİRDEN', back_expos: '← Retour aux expositions',
     technique: 'Technique', dimensions: 'Dimensions', year: 'Année', price: 'Prix',
-    on_request: 'Prix sur demande', sold: 'VENDU', buy: 'Pour acheter cette œuvre, contactez le curateur :',
+        on_request: 'Prix sur demande', sold: 'VENDU', buy: 'Contacter le curateur :',
     bio: 'Biographie', manifesto: "Manifeste de l'artiste", other: 'TR',
   },
   tr: {
     artists: 'Sanatçılar', works: 'BİRBİRDEN’de Sergilenen Eserler', back_expos: '← Sergilere dön',
     technique: 'Teknik', dimensions: 'Ebat', year: 'Yıl', price: 'Fiyat',
-    on_request: 'Fiyat için iletişime geçin', sold: 'SATILDI', buy: 'Bu eseri satın almak için küratörle iletişime geçin:',
+        on_request: 'Fiyat için iletişime geçin', sold: 'SATILDI', buy: 'Küratörle iletişim:',
     bio: 'Biyografi', manifesto: 'Sanatçı manifestosu', other: 'FR',
   },
 };
