@@ -10,17 +10,17 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "inci-kilisli-bereket-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "entegre",
+      "title": "Entegre",
+      "title_tr": "Entegre",
+      "image": "inci-kilisli-bereket-01.jpeg",
+      "year": "2026",
+      "dimensions": "100 × 160 cm",
+      "technique": "Yağlı boya karışık teknik",
+      "technique_tr": "Yağlı boya karışık teknik",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "55.000 TL",
       "status": "disponible"
     }
   ]
