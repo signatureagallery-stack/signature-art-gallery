@@ -10,17 +10,31 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "nadine-el-kaffel-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "kadinlar-serisi-1",
+      "title": "Kadınlar Serisi",
+      "title_tr": "Kadınlar Serisi",
+      "image": "nadine-el-kaffel-01.jpeg",
+      "year": "2024",
+      "dimensions": "120 × 120 cm",
+      "technique": "Tual üzerinde akrilik boya - altın varak",
+      "technique_tr": "Tual üzerinde akrilik boya - altın varak",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "60.000 TL",
+      "status": "disponible"
+    },
+    {
+      "slug": "kadinlar-serisi-2",
+      "title": "Kadınlar Serisi",
+      "title_tr": "Kadınlar Serisi",
+      "image": "nadine-el-kaffel-02.jpeg",
+      "year": "2024",
+      "dimensions": "40 × 40 cm",
+      "technique": "Tual üzerinde akrilik boya",
+      "technique_tr": "Tual üzerinde akrilik boya",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "6.000 TL",
       "status": "disponible"
     }
   ]

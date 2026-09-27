@@ -10,17 +10,31 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "talat-balci-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "zamanin-inceldigi-yer",
+      "title": "Zamanın İnceldiği Yer",
+      "title_tr": "Zamanın İnceldiği Yer",
+      "image": "talat-balcı-01.jpeg",
+      "year": "2026",
+      "dimensions": "50 × 30 cm",
+      "technique": "Zeytin ağacı, ahşap tornalama",
+      "technique_tr": "Zeytin ağacı, ahşap tornalama",
       "description_fr": "",
       "description_tr": "",
       "price": "",
+      "status": "disponible"
+    },
+    {
+      "slug": "esik",
+      "title": "Eşik",
+      "title_tr": "Eşik",
+      "image": "talat-balcı-02.jpeg",
+      "year": "2026",
+      "dimensions": "çap 35 × H 29 cm, ağız çapı 19 cm",
+      "technique": "Atlas sakız ağacı, ahşap tornalama",
+      "technique_tr": "Atlas sakız ağacı, ahşap tornalama",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "29.000 TL",
       "status": "disponible"
     }
   ]
