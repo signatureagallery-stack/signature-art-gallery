@@ -10,17 +10,17 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "gulsen-estim-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "ozgur-kiz",
+      "title": "Özgür Kız",
+      "title_tr": "Özgür Kız",
+      "image": "gulsen-estim-01.jpeg",
+      "year": "2026",
+      "dimensions": "23 x 25 x 20 cm",
+      "technique": "Seramik elle şekillendirme",
+      "technique_tr": "Seramik elle şekillendirme",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "50.000 TL",
       "status": "disponible"
     }
   ]

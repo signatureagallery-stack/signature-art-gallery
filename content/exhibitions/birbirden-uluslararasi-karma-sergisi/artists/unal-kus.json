@@ -10,17 +10,31 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "unal-kus-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "antakyali-1",
+      "title": "Antakyalı",
+      "title_tr": "Antakyalı",
+      "image": "unal-kus-01.png",
+      "year": "2024",
+      "dimensions": "30 x 40 cm",
+      "technique": "Tual üzerinde yağlı boya",
+      "technique_tr": "Tual üzerinde yağlı boya",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "25.000 TL",
+      "status": "disponible"
+    },
+    {
+      "slug": "antakyali-2",
+      "title": "Antakyalı",
+      "title_tr": "Antakyalı",
+      "image": "unal-kus-02.png",
+      "year": "2024",
+      "dimensions": "30 x 40 cm",
+      "technique": "Tual üzerinde yağlı boya",
+      "technique_tr": "Tual üzerinde yağlı boya",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "25.000 TL",
       "status": "disponible"
     }
   ]

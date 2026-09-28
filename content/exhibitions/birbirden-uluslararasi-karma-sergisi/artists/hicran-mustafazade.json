@@ -10,17 +10,17 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "hicran-mustafazade-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "ataturk",
+      "title": "Atatürk",
+      "title_tr": "Atatürk",
+      "image": "hicran-mustafazade-01.jpeg",
+      "year": "2025",
+      "dimensions": "100 x 120 cm",
+      "technique": "Tual üzerine yağlı boya",
+      "technique_tr": "Tual üzerine yağlı boya",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "10.000 TL",
       "status": "disponible"
     }
   ]

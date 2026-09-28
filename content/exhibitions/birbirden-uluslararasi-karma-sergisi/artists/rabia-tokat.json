@@ -10,17 +10,31 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "rabia-tokat-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "aura-pop-g-o-a-t",
+      "title": "Aura - Pop G.O.A.T",
+      "title_tr": "Aura - Pop G.O.A.T",
+      "image": "rabia-tokat-01.jpeg",
+      "year": "2026",
+      "dimensions": "30 x 19 x 30.5 cm",
+      "technique": "Elle şekillendirme - seramik",
+      "technique_tr": "Elle şekillendirme - seramik",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "50.000 TL",
+      "status": "disponible"
+    },
+    {
+      "slug": "cosmo-pop-g-o-a-t",
+      "title": "Cosmo - Pop G.O.A.T",
+      "title_tr": "Cosmo - Pop G.O.A.T",
+      "image": "rabia-tokat-02.jpeg",
+      "year": "2026",
+      "dimensions": "26 x 13 x 31 cm",
+      "technique": "Elle şekillendirme - seramik",
+      "technique_tr": "Elle şekillendirme - seramik",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "45.000 TL",
       "status": "disponible"
     }
   ]

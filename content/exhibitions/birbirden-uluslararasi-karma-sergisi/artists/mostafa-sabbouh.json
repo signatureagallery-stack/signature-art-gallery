@@ -10,17 +10,17 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
-      "title_tr": "İsimsiz",
-      "image": "mostafa-sabbouh-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "slug": "the-cat",
+      "title": "The Cat",
+      "title_tr": "The Cat",
+      "image": "mostafa-sabbouh-01.jpeg",
+      "year": "2025",
+      "dimensions": "49 x 33 x 20 cm",
+      "technique": "Mermer heykel",
+      "technique_tr": "Mermer heykel",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "5.000 USD",
       "status": "disponible"
     }
   ]

@@ -10,17 +10,31 @@
   "manifesto_tr": "",
   "works": [
     {
-      "slug": "sans-titre-i",
-      "title": "Sans titre",
+      "slug": "i-simsiz-1",
+      "title": "İsimsiz",
       "title_tr": "İsimsiz",
-      "image": "emel-akbulut-afis.png",
-      "year": "",
-      "dimensions": "",
-      "technique": "",
-      "technique_tr": "",
+      "image": "emel-akbulut-01.jpeg",
+      "year": "2026",
+      "dimensions": "50 x 50 cm",
+      "technique": "Tual üzerinde yağlı boya",
+      "technique_tr": "Tual üzerinde yağlı boya",
       "description_fr": "",
       "description_tr": "",
-      "price": "",
+      "price": "40.000 TL",
+      "status": "disponible"
+    },
+    {
+      "slug": "i-simsiz-2",
+      "title": "İsimsiz",
+      "title_tr": "İsimsiz",
+      "image": "emel-akbulut-02.jpeg",
+      "year": "2026",
+      "dimensions": "50 x 50 cm",
+      "technique": "Tual üzerinde yağlı boya",
+      "technique_tr": "Tual üzerinde yağlı boya",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "40.000 TL",
       "status": "disponible"
     }
   ]
