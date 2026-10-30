@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const birbirden = require('./birbirden-build');
+const foires = require('./foires-build');
 const ROOT = __dirname;
 const PRODUCTS_DIR = path.join(ROOT, 'content', 'products');
 const IMAGES_SRC = path.join(ROOT, 'assets', 'images', 'boutique');
@@ -711,6 +712,7 @@ async function main() {
   generatePublicExhibitionData(publicExhibitions);
 
     await birbirden.build({ ROOT, exhibitions });
+    await foires.build({ ROOT });
   console.log('✓ Build terminé.');
 }
 
