@@ -91,8 +91,15 @@ function loadArtists(root, fairSlug) {
 // ---------- Images (WebP + miniature) ----------
 async function processImage(root, file, thumbW, fullW) {
   if (!file) return null;
-  const src = path.join(root, IMG_SRC, file);
-  if (!fs.existsSync(src)) { console.warn(`⚠️  Image manquante (Foires) : ${file}`); return null; }
+  let src = path.join(root, IMG_SRC, file);
+  if (!fs.existsSync(src)) {
+    // Tolérance sur l'extension : mêmes lettres, autre extension (jpeg / jpg / png / webp)
+    const wanted = path.parse(file).name;
+    const dir = path.join(root, IMG_SRC);
+    const alt = fs.existsSync(dir) ? fs.readdirSync(dir).find((f) => path.parse(f).name === wanted && /\.(jpe?g|png|webp)$/i.test(f)) : null;
+    if (!alt) { console.warn(`⚠️  Image manquante (Foires) : ${file}`); return null; }
+    src = path.join(dir, alt);
+  }
   const base = path.parse(file).name;
   const outDir = path.join(root, IMG_OUT);
   fs.mkdirSync(outDir, { recursive: true });
