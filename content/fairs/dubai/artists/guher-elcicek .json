@@ -1,0 +1,69 @@
+{
+  "name": "Güher Elçiçek",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "guher-elcicek-afis.png",
+  "order": 1,
+  "bio_fr": "1974 yılında İstanbul’da doğan Güher Elçiçek, lisans eğitimini Doğuş Üniversitesi Sanat ve Tasarım Fakültesi’nde tamamlamıştır. İlk karma sergisine dereceli mezunlar sergisiyle katılmış, daha sonra yurt içinde ve yurt dışında çeşitli karma sergilerde eserleriyle yer almıştır. G&G Sanat Merkezi’ni kuran sanatçı, halen kendi atölyesinde resim ve seramik çalışmalarını sürdürmektedir.\n\nÇalışmalarında doğanın kusursuz renk, biçim ve formlarından ilham almaktadır. Ona göre var oluşumuzun tüm sırları doğada ve doğanın kusursuz döngüsünde gizlidir. Toprakta yetişen bir çiçeğin güzelliği ve tırtılın kozaya, kozanın kelebeğe dönüşümü gibi mucizeler, sanatçının doğaya ve yaşama bakışını beslemektedir. Sanatıyla bu kusursuz döngüyü kendi yorumuyla harmanlayarak yeni bir algı yaratmayı, bu mucizeye renk ve form kazandırmayı amaçlamaktadır.",
+  "bio_tr": "1974 yılında İstanbul’da doğan Güher Elçiçek, lisans eğitimini Doğuş Üniversitesi Sanat ve Tasarım Fakültesi’nde tamamlamıştır. İlk karma sergisine dereceli mezunlar sergisiyle katılmış, daha sonra yurt içinde ve yurt dışında çeşitli karma sergilerde eserleriyle yer almıştır. G&G Sanat Merkezi’ni kuran sanatçı, halen kendi atölyesinde resim ve seramik çalışmalarını sürdürmektedir.\n\nÇalışmalarında doğanın kusursuz renk, biçim ve formlarından ilham almaktadır. Ona göre var oluşumuzun tüm sırları doğada ve doğanın kusursuz döngüsünde gizlidir. Toprakta yetişen bir çiçeğin güzelliği ve tırtılın kozaya, kozanın kelebeğe dönüşümü gibi mucizeler, sanatçının doğaya ve yaşama bakışını beslemektedir. Sanatıyla bu kusursuz döngüyü kendi yorumuyla harmanlayarak yeni bir algı yaratmayı, bu mucizeye renk ve form kazandırmayı amaçlamaktadır.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "kamuflaj-serisi-1",
+      "title": "Kamuflaj Serisi",
+      "title_tr": "Kamuflaj Serisi",
+      "image": "guher-elcicek-01.jpeg",
+      "year": "2025",
+      "dimensions": "60 × 50 cm",
+      "technique": "Mixed Technique",
+      "technique_tr": "Mixed Technique",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "6,000 AED / 1,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "kamuflaj-serisi-2",
+      "title": "Kamuflaj Serisi",
+      "title_tr": "Kamuflaj Serisi",
+      "image": "guher-elcicek-02.jpeg",
+      "year": "2025",
+      "dimensions": "60 × 50 cm",
+      "technique": "Mixed Technique",
+      "technique_tr": "Mixed Technique",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "6,000 AED / 1,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "kamuflaj-serisi-3",
+      "title": "Kamuflaj Serisi",
+      "title_tr": "Kamuflaj Serisi",
+      "image": "guher-elcicek-03.jpeg",
+      "year": "2025",
+      "dimensions": "60 × 50 cm",
+      "technique": "Mixed Technique",
+      "technique_tr": "Mixed Technique",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "6,000 AED / 1,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "kamuflaj-serisi-4",
+      "title": "Kamuflaj Serisi",
+      "title_tr": "Kamuflaj Serisi",
+      "image": "guher-elcicek-04.jpeg",
+      "year": "2025",
+      "dimensions": "60 × 50 cm",
+      "technique": "Mixed Technique",
+      "technique_tr": "Mixed Technique",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "6,000 AED / 1,500 USD",
+      "status": "disponible"
+    }
+  ]
+}
