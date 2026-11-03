@@ -1,0 +1,41 @@
+{
+  "name": "Hilal Çalışkan",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "hilal-caliskan-afis.png",
+  "order": 2,
+  "bio_fr": "Hilal Çalışkan was born in Sydney, Australia, and completed her education in Business and Economics at the University of Sydney. Although she worked extensively with charcoal and oil painting for many years, she has been producing professional-level works using the alcohol ink technique since 2020. She can be described as the first artist in Turkey to employ this technique within her own original artistic practice.\nFollowing her Horse Whisperer series, she introduced her new series titled “Checkmate” (Şah Mat) to art lovers in 2024.\nThrough her participation in numerous group exhibitions and art fairs both in Turkey and internationally, she has successfully introduced this distinctive artistic language and attracted significant attention. She currently lives and continues her artistic practice in Istanbul.",
+  "bio_tr": "Hilal Çalışkan was born in Sydney, Australia, and completed her education in Business and Economics at the University of Sydney. Although she worked extensively with charcoal and oil painting for many years, she has been producing professional-level works using the alcohol ink technique since 2020. She can be described as the first artist in Turkey to employ this technique within her own original artistic practice.\nFollowing her Horse Whisperer series, she introduced her new series titled “Checkmate” (Şah Mat) to art lovers in 2024.\nThrough her participation in numerous group exhibitions and art fairs both in Turkey and internationally, she has successfully introduced this distinctive artistic language and attracted significant attention. She currently lives and continues her artistic practice in Istanbul.",
+  "manifesto_fr": "Checkmate Series | The Story of the Knight\n\n“Checkmate does not come from the strongest piece,\nbut from the move no one accounted for.”\n“The fate of those who do not move in straight lines.”\n\nOn the chessboard, everyone looks forward.\nThe Rook moves straight,\nthe Bishop watches the diagonals,\nthe Queen wants to control everything.\n\nBut the Knight\nis the only piece that follows the rules\nwhile not truly belonging to them.\n\nIt does not move straight.\nIt does not walk the expected path.\nThe Knight moves through the system’s blind spots.\n\nThe Knight is not there to protect the King,\nbut to disrupt the game.\n\nWhile all eyes are on the Queen,\nthe Knight waits in silence.\n\nAnd at the right moment\n—with a single move—\nit changes the fate of the game.\n\nThat is why Checkmate\nis not a loud victory.",
+  "manifesto_tr": "Checkmate Series | The Story of the Knight\n\n“Checkmate does not come from the strongest piece,\nbut from the move no one accounted for.”\n“The fate of those who do not move in straight lines.”\n\nOn the chessboard, everyone looks forward.\nThe Rook moves straight,\nthe Bishop watches the diagonals,\nthe Queen wants to control everything.\n\nBut the Knight\nis the only piece that follows the rules\nwhile not truly belonging to them.\n\nIt does not move straight.\nIt does not walk the expected path.\nThe Knight moves through the system’s blind spots.\n\nThe Knight is not there to protect the King,\nbut to disrupt the game.\n\nWhile all eyes are on the Queen,\nthe Knight waits in silence.\n\nAnd at the right moment\n—with a single move—\nit changes the fate of the game.\n\nThat is why Checkmate\nis not a loud victory.",
+  "works": [
+    {
+      "slug": "sah-mat",
+      "title": "Şah Mat",
+      "title_tr": "Şah Mat",
+      "image": "hilal-caliskan-01.jpeg",
+      "year": "2025",
+      "dimensions": "100 × 80 cm",
+      "technique": "Alcohol Ink on Canvas",
+      "technique_tr": "Alcohol Ink on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "20,000 AED / 5,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "kale",
+      "title": "Kale",
+      "title_tr": "Kale",
+      "image": "hilal-caliskan-02.jpeg",
+      "year": "2026",
+      "dimensions": "100 × 80 cm",
+      "technique": "Alcohol Ink on Canvas",
+      "technique_tr": "Alcohol Ink on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "20,000 AED / 5,000 USD",
+      "status": "disponible"
+    }
+  ]
+}
