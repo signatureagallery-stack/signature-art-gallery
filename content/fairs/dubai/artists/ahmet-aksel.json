@@ -1,0 +1,69 @@
+{
+  "name": "Ahmet Aksel",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "ahmet-aksel-afis.png",
+  "order": 9,
+  "bio_fr": "The traditional art of Ebru has, for the first time in the world, been successfully brought into the third dimension. Ebru artist Ahmet Aksel, who has registered this innovative technique under the name Aksel Ebru®, is preparing to present the possibilities offered by this innovation to the art world.\n\nBy transforming the unique textures of traditional Turkish textile fabrics into works of art, he aims to create pieces that appeal not only to the fashion world but also to the contemporary art scene.",
+  "bio_tr": "The traditional art of Ebru has, for the first time in the world, been successfully brought into the third dimension. Ebru artist Ahmet Aksel, who has registered this innovative technique under the name Aksel Ebru®, is preparing to present the possibilities offered by this innovation to the art world.\n\nBy transforming the unique textures of traditional Turkish textile fabrics into works of art, he aims to create pieces that appeal not only to the fashion world but also to the contemporary art scene.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "hic-1",
+      "title": "HİÇ",
+      "title_tr": "HİÇ",
+      "image": "ahmet-aksel-01.jpeg",
+      "year": "2025",
+      "dimensions": "26 × 31 cm",
+      "technique": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "technique_tr": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "hic-2",
+      "title": "HİÇ",
+      "title_tr": "HİÇ",
+      "image": "ahmet-aksel-02.jpeg",
+      "year": "2025",
+      "dimensions": "26 × 31 cm",
+      "technique": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "technique_tr": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "allah",
+      "title": "ALLAH",
+      "title_tr": "ALLAH",
+      "image": "ahmet-aksel-03.jpeg",
+      "year": "2025",
+      "dimensions": "26 × 31 cm",
+      "technique": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "technique_tr": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "mohammed",
+      "title": "MOHAMMED",
+      "title_tr": "MOHAMMED",
+      "image": "ahmet-aksel-04.jpeg",
+      "year": "2025",
+      "dimensions": "26 × 31 cm",
+      "technique": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "technique_tr": "Aksel Ebru® – Marbling on Fine Art Paper",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    }
+  ]
+}
