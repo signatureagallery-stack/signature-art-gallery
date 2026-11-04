@@ -1,0 +1,69 @@
+{
+  "name": "S. Nini Önözden",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "nini-onozden-afis.png",
+  "order": 6,
+  "bio_fr": "S. Nini Önözden is a Turkish artist and educator based in Adana. After completing her primary and secondary education in Germany, she returned to Turkey in 1984. She graduated from Çukurova University, Faculty of Education, Department of Fine Arts Education, Painting Major in 1992 and completed her Master’s degree in 1998.\n\nBetween 2005 and 2017, she taught at Çukurova University. From 1999 to 2022, she worked as a Painting Teacher and Head of the Visual Arts Department at Gündoğdu Schools. She also served as Director of Gündoğdu Art Gallery until 2022.\n\nIn collaboration with the Goethe-Institut, she participated in the “Drama Method for Learning German” project, combining drama and visual arts in language education.\n\nÖnözden continues her artistic practice at her studio in Adana. With eight solo exhibitions, she has also participated in numerous national and international group exhibitions.",
+  "bio_tr": "S. Nini Önözden is a Turkish artist and educator based in Adana. After completing her primary and secondary education in Germany, she returned to Turkey in 1984. She graduated from Çukurova University, Faculty of Education, Department of Fine Arts Education, Painting Major in 1992 and completed her Master’s degree in 1998.\n\nBetween 2005 and 2017, she taught at Çukurova University. From 1999 to 2022, she worked as a Painting Teacher and Head of the Visual Arts Department at Gündoğdu Schools. She also served as Director of Gündoğdu Art Gallery until 2022.\n\nIn collaboration with the Goethe-Institut, she participated in the “Drama Method for Learning German” project, combining drama and visual arts in language education.\n\nÖnözden continues her artistic practice at her studio in Adana. With eight solo exhibitions, she has also participated in numerous national and international group exhibitions.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "ablaya-bir-masal",
+      "title": "Ablaya Bir Masal",
+      "title_tr": "Ablaya Bir Masal",
+      "image": "nini-onozden-01.jpeg",
+      "year": "2025",
+      "dimensions": "25 × 25 cm",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "gelin-abla",
+      "title": "Gelin Abla",
+      "title_tr": "Gelin Abla",
+      "image": "nini-onozden-02.jpeg",
+      "year": "2025",
+      "dimensions": "25 × 25 cm",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "ablaya-bir-masal-4",
+      "title": "Ablaya Bir Masal 4",
+      "title_tr": "Ablaya Bir Masal 4",
+      "image": "nini-onozden-03.jpeg",
+      "year": "2025",
+      "dimensions": "25 × 25 cm",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "ablaya-bir-masal-2",
+      "title": "Ablaya Bir Masal 2",
+      "title_tr": "Ablaya Bir Masal 2",
+      "image": "nini-onozden-04.jpeg",
+      "year": "2025",
+      "dimensions": "25 × 25 cm",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    }
+  ]
+}
