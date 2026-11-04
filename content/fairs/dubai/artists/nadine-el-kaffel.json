@@ -1,0 +1,41 @@
+{
+  "name": "Nadine El Kaffel",
+  "country": "Tunisie",
+  "country_tr": "Tunus",
+  "poster": "nadine-el-kaffel-afis.png",
+  "order": 7,
+  "bio_fr": "1984 yılında Almanya’nın Würzburg şehrinde doğan Nadine El Kaffel, sanatçı, küratör ve İstanbul’da Signature Art Gallery’nin kurucusudur. Tunus kökenli olan sanatçı, Tunus’ta École Supérieure de Commerce ve Institut Supérieur de Gestion’de Finans alanında iki yüksek lisans programını başarıyla tamamlamıştır.\n\nFinans sektöründe farklı kurumlarda çalışarak kariyerini geliştiren Nadine El Kaffel, 2018 yılında Türkiye’de kendi ihracat şirketini kurmuş ve tekstil hammaddeleri alanında uluslararası ticaret faaliyetlerini sürdürmüştür.\n\nYirmili yaşlarında Avrupa giyim markaları için modellik de yapan sanatçı, profesyonel kariyerinin yanı sıra çocukluk yıllarından itibaren resme duyduğu ilgi ve tutkuyu sürdürmüştür. Herhangi bir akademik sanat eğitimi almadan, kitaplardan yararlanarak ve farklı teknikleri deneyerek kendini geliştiren sanatçı; soyutlama, manzara ve natürmort çalışmalarının ardından zamanla kadın portresine yönelmiştir.\n\nSanatında kadın, dünyayı temsil eden temel bir figür olarak ele alınırken, portreleri aracılığıyla insanın iç dünyasını ve duygularını tuval üzerine aktarmayı amaçlamaktadır. Eserleri çeşitli sergi ve sanat fuarlarında izleyiciyle buluşmuştur.\n\nSanatsal üretiminin yanı sıra sanat dünyasına katkı sunmak ve sanatçıların gelişimine destek olmak amacıyla 2022 yılında İstanbul Beşiktaş’ta Signature Art Gallery’yi kurmuştur. Galeride sanatçı ve küratör olarak çalışmalarını sürdüren Nadine El Kaffel, genç ve gelişmekte olan sanatçılara yönelik sergi projeleri, sanatçı gelişimi ve uluslararası sanat etkinlikleri üzerine çalışmalar yürütmektedir.\n\nBugüne kadar 200’ün üzerinde kişisel ve karma serginin organizasyonunu ve küratörlüğünü üstlenmiş, ayrıca 17 sanat fuarına katılmıştır.",
+  "bio_tr": "1984 yılında Almanya’nın Würzburg şehrinde doğan Nadine El Kaffel, sanatçı, küratör ve İstanbul’da Signature Art Gallery’nin kurucusudur. Tunus kökenli olan sanatçı, Tunus’ta École Supérieure de Commerce ve Institut Supérieur de Gestion’de Finans alanında iki yüksek lisans programını başarıyla tamamlamıştır.\n\nFinans sektöründe farklı kurumlarda çalışarak kariyerini geliştiren Nadine El Kaffel, 2018 yılında Türkiye’de kendi ihracat şirketini kurmuş ve tekstil hammaddeleri alanında uluslararası ticaret faaliyetlerini sürdürmüştür.\n\nYirmili yaşlarında Avrupa giyim markaları için modellik de yapan sanatçı, profesyonel kariyerinin yanı sıra çocukluk yıllarından itibaren resme duyduğu ilgi ve tutkuyu sürdürmüştür. Herhangi bir akademik sanat eğitimi almadan, kitaplardan yararlanarak ve farklı teknikleri deneyerek kendini geliştiren sanatçı; soyutlama, manzara ve natürmort çalışmalarının ardından zamanla kadın portresine yönelmiştir.\n\nSanatında kadın, dünyayı temsil eden temel bir figür olarak ele alınırken, portreleri aracılığıyla insanın iç dünyasını ve duygularını tuval üzerine aktarmayı amaçlamaktadır. Eserleri çeşitli sergi ve sanat fuarlarında izleyiciyle buluşmuştur.\n\nSanatsal üretiminin yanı sıra sanat dünyasına katkı sunmak ve sanatçıların gelişimine destek olmak amacıyla 2022 yılında İstanbul Beşiktaş’ta Signature Art Gallery’yi kurmuştur. Galeride sanatçı ve küratör olarak çalışmalarını sürdüren Nadine El Kaffel, genç ve gelişmekte olan sanatçılara yönelik sergi projeleri, sanatçı gelişimi ve uluslararası sanat etkinlikleri üzerine çalışmalar yürütmektedir.\n\nBugüne kadar 200’ün üzerinde kişisel ve karma serginin organizasyonunu ve küratörlüğünü üstlenmiş, ayrıca 17 sanat fuarına katılmıştır.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "woman-series-1",
+      "title": "Woman Series",
+      "title_tr": "Woman Series",
+      "image": "nadine-el-kaffel-01.jpeg",
+      "year": "2025",
+      "dimensions": "40 × 40 cm",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "woman-series-2",
+      "title": "Woman Series",
+      "title_tr": "Woman Series",
+      "image": "nadine-el-kaffel-02.jpeg",
+      "year": "2025",
+      "dimensions": "30 × 30 cm",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "2,500 AED / 650 USD",
+      "status": "disponible"
+    }
+  ]
+}
