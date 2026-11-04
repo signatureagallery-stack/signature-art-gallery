@@ -1,0 +1,83 @@
+{
+  "name": "Hasan Erdem",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "hasan-erdem-afis.png",
+  "order": 3,
+  "bio_fr": "Hasan Erdem is a Turkish contemporary Pop Art artist whose practice draws on Graphic Arts, Illustration and contemporary visual culture, shaped in part by his education at Mimar Sinan Fine Arts University. Combining Pop Art with influences from street art, expressive figuration and graffiti, he has developed a distinctive visual language characterized by bold colors, strong contours and symbolic characters. His works reinterpret ordinary elements of everyday life through playful yet thought-provoking imagery. Beneath their energetic and colorful surfaces, his compositions explore themes of identity, loneliness, happiness, hope, consumer culture and human relationships. In series such as “Probiotic People,” Erdem uses imperfect and expressive figures to reflect the psychological states and contradictions of life. Humor, symbolism and text often become integral elements of his compositions, while layered paint, fluid surfaces and textures add depth to his work.",
+  "bio_tr": "Hasan Erdem, grafik sanatlar, illüstrasyon ve çağdaş görsel kültürden beslenen, Mimar Sinan Güzel Sanatlar Üniversitesi'ndeki eğitiminin de etkisiyle sanatsal yaklaşımını geliştirmiş Türk çağdaş Pop Art sanatçısıdır.\n\nPop Art'ı sokak sanatı, dışavurumcu figürasyon ve graffiti etkileriyle bir araya getiren sanatçı; cesur renkler, güçlü konturlar ve sembolik karakterlerle tanımlanan özgün bir görsel dil geliştirmiştir. Eserlerinde gündelik yaşamın sıradan unsurlarını, eğlenceli ancak düşündürücü imgeler aracılığıyla yeniden yorumlamaktadır.\n\nEnerjik ve renkli yüzeylerin altında kimlik, yalnızlık, mutluluk, umut, tüketim kültürü ve insan ilişkileri gibi temaları ele almaktadır. Probiotic People gibi serilerinde kusurlu ve dışavurumcu figürler aracılığıyla yaşamın psikolojik durumlarını ve çelişkilerini yansıtmaktadır.\n\nMizah, sembolizm ve metin, kompozisyonlarının önemli unsurları arasında yer alırken; katmanlı boya uygulamaları, akışkan yüzeyler ve dokular eserlerine derinlik kazandırmaktadır.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "probiotic-people-series-1",
+      "title": "Probiotic People Series",
+      "title_tr": "Probiotic People Series",
+      "image": "hasan-erdem-01.jpeg",
+      "year": "2026",
+      "dimensions": "60 × 80 cm",
+      "technique": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "technique_tr": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "probiotic-people-series-2",
+      "title": "Probiotic People Series",
+      "title_tr": "Probiotic People Series",
+      "image": "hasan-erdem-02.jpeg",
+      "year": "2026",
+      "dimensions": "60 × 80 cm",
+      "technique": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "technique_tr": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "probiotic-people-series-3",
+      "title": "Probiotic People Series",
+      "title_tr": "Probiotic People Series",
+      "image": "hasan-erdem-03.jpeg",
+      "year": "2026",
+      "dimensions": "60 × 80 cm",
+      "technique": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "technique_tr": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "probiotic-people-series-4",
+      "title": "Probiotic People Series",
+      "title_tr": "Probiotic People Series",
+      "image": "hasan-erdem-04.jpeg",
+      "year": "2026",
+      "dimensions": "60 × 80 cm",
+      "technique": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "technique_tr": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "probiotic-people-series-5",
+      "title": "Probiotic People Series",
+      "title_tr": "Probiotic People Series",
+      "image": "hasan-erdem-05.jpeg",
+      "year": "2026",
+      "dimensions": "60 × 80 cm",
+      "technique": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "technique_tr": "Pop Art – Acrylic and Mixed Technique on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    }
+  ]
+}
