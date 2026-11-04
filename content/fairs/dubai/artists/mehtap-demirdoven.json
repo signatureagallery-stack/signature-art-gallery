@@ -1,0 +1,41 @@
+{
+  "name": "Mehtap Demirdöven",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "mehtap-demirdoven-afis.png",
+  "order": 5,
+  "bio_fr": "My name is Mehtap Demirdöven. I was born in Istanbul in 1972 and graduated from the Ceramics Department of the Faculty of Fine Arts at Marmara University. For 25 years, I have been working as a ceramics and visual arts teacher.\n\nIn 2020, when I discovered epoxy, I became aware of the powerful effect that color and light have on me. My work in the field of neuro-visual arts feels like a form of meditation — deep, immersive, and healing.\n\nI believe that colors can instantly transform our emotional state. For this reason, in every piece I create, I blend colors with feelings of positive energy, trust, and joy for life. Illuminating the soul through the energy of color and bringing joy to everyday life… this is the essence of my artistic journey.",
+  "bio_tr": "My name is Mehtap Demirdöven. I was born in Istanbul in 1972 and graduated from the Ceramics Department of the Faculty of Fine Arts at Marmara University. For 25 years, I have been working as a ceramics and visual arts teacher.\n\nIn 2020, when I discovered epoxy, I became aware of the powerful effect that color and light have on me. My work in the field of neuro-visual arts feels like a form of meditation — deep, immersive, and healing.\n\nI believe that colors can instantly transform our emotional state. For this reason, in every piece I create, I blend colors with feelings of positive energy, trust, and joy for life. Illuminating the soul through the energy of color and bringing joy to everyday life… this is the essence of my artistic journey.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "diversity-series-reveal-1",
+      "title": "Diversity Series – Reveal",
+      "title_tr": "Diversity Series – Reveal",
+      "image": "mehtap-demirdoven-01.jpeg",
+      "year": "2026",
+      "dimensions": "70 × 70 cm",
+      "technique": "Abstract – Acrylic on Plexiglass",
+      "technique_tr": "Abstract – Acrylic on Plexiglass",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "diversity-series-reveal-2",
+      "title": "Diversity Series – Reveal",
+      "title_tr": "Diversity Series – Reveal",
+      "image": "mehtap-demirdoven-02.jpeg",
+      "year": "2026",
+      "dimensions": "50 × 50 cm",
+      "technique": "Abstract – Acrylic on Plexiglass",
+      "technique_tr": "Abstract – Acrylic on Plexiglass",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "8,000 AED / 2,000 USD",
+      "status": "disponible"
+    }
+  ]
+}
