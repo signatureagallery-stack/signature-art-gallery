@@ -1,0 +1,83 @@
+{
+  "name": "Zümrüt Boran",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "zumrut-boran-afis.png",
+  "order": 8,
+  "bio_fr": "Zümrüt Boran graduated from the Department of Plastic Arts at Yeditepe University’s Faculty of Fine Arts, studying under Ergin İnan, Zahit Büyükişleyen and Özdemir Altan. She has worked in Istanbul for about twenty years.\n\nMoving between figurative and abstract expressionism, her layered, colourful paintings explore the tension between the inner self and the identity projected outward.\n\nHer recent work centres on two series. Silent Clown examines vulnerability, suppressed emotions and the pressure to be visible; the red nose symbolises an expression imposed from outside. XOX – Let’s Play turns a childhood game into a metaphor for life’s recurring choices, encounters and new beginnings.\n\nTogether, they reveal an inner energy that persists despite adversity and a determination to preserve the joy of living.\n\nShe has exhibited in solo and group shows and art fairs in Istanbul, Izmir, Adana and Antalya.",
+  "bio_tr": "Zümrüt Boran graduated from the Department of Plastic Arts at Yeditepe University’s Faculty of Fine Arts, studying under Ergin İnan, Zahit Büyükişleyen and Özdemir Altan. She has worked in Istanbul for about twenty years.\n\nMoving between figurative and abstract expressionism, her layered, colourful paintings explore the tension between the inner self and the identity projected outward.\n\nHer recent work centres on two series. Silent Clown examines vulnerability, suppressed emotions and the pressure to be visible; the red nose symbolises an expression imposed from outside. XOX – Let’s Play turns a childhood game into a metaphor for life’s recurring choices, encounters and new beginnings.\n\nTogether, they reveal an inner energy that persists despite adversity and a determination to preserve the joy of living.\n\nShe has exhibited in solo and group shows and art fairs in Istanbul, Izmir, Adana and Antalya.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "xox-series-1",
+      "title": "XOX Series",
+      "title_tr": "XOX Series",
+      "image": "zumrut-boran-01.jpeg",
+      "year": "2026",
+      "dimensions": "100 × 100 cm",
+      "technique": "Oil and Epoxy on Canvas",
+      "technique_tr": "Oil and Epoxy on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "silent-clown-series-1",
+      "title": "Silent Clown Series",
+      "title_tr": "Silent Clown Series",
+      "image": "zumrut-boran-02.jpeg",
+      "year": "2026",
+      "dimensions": "70 × 70 cm",
+      "technique": "Oil and Epoxy on Canvas",
+      "technique_tr": "Oil and Epoxy on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "10,000 AED / 2,500 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "silent-clown-series-2",
+      "title": "Silent Clown Series",
+      "title_tr": "Silent Clown Series",
+      "image": "zumrut-boran-03.jpeg",
+      "year": "2026",
+      "dimensions": "50 × 50 cm",
+      "technique": "Oil and Epoxy on Canvas",
+      "technique_tr": "Oil and Epoxy on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "8,000 AED / 2,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "xox-series-2",
+      "title": "XOX Series",
+      "title_tr": "XOX Series",
+      "image": "zumrut-boran-04.jpeg",
+      "year": "2026",
+      "dimensions": "50 × 50 cm",
+      "technique": "Oil and Epoxy on Canvas",
+      "technique_tr": "Oil and Epoxy on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "8,000 AED / 2,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "silent-clown-series-3",
+      "title": "Silent Clown Series",
+      "title_tr": "Silent Clown Series",
+      "image": "zumrut-boran-05.jpeg",
+      "year": "2026",
+      "dimensions": "35 × 35 cm",
+      "technique": "Oil and Epoxy on Canvas",
+      "technique_tr": "Oil and Epoxy on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    }
+  ]
+}
