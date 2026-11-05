@@ -1,0 +1,69 @@
+{
+  "name": "Olga Gedola",
+  "country": "Ukraine",
+  "country_tr": "Ukrayna",
+  "poster": "olga-gedola-afis.png",
+  "order": 10,
+  "bio_fr": "Olga Gedola is a Ukrainian self-taught artist currently living and working in Ankara, Türkiye. Specializing in Pop Art sculptures and figurative creations, she develops a distinctive artistic language through bold forms, expressive characters and vibrant visual elements.\n\nHer sculptural practice combines contemporary Pop Art aesthetics with playful interpretations of nature and iconic figures, creating distinctive objects that celebrate individuality, strength and artistic expression.",
+  "bio_tr": "Olga Gedola is a Ukrainian self-taught artist currently living and working in Ankara, Türkiye. Specializing in Pop Art sculptures and figurative creations, she develops a distinctive artistic language through bold forms, expressive characters and vibrant visual elements.\n\nHer sculptural practice combines contemporary Pop Art aesthetics with playful interpretations of nature and iconic figures, creating distinctive objects that celebrate individuality, strength and artistic expression.",
+  "manifesto_fr": "A BOLD COLLISION OF WILDERNESS AND ART.\n\nTHIS COLLECTION CELEBRATES PRIMAL POWER, VIBRANT EXPRESSION, AND UNAPOLOGETIC ELEGANCE. EACH PIECE IS A SCULPTED ICON—UNTAMED AND IRRESISTIBLY UNIQUE.",
+  "manifesto_tr": "A BOLD COLLISION OF WILDERNESS AND ART.\n\nTHIS COLLECTION CELEBRATES PRIMAL POWER, VIBRANT EXPRESSION, AND UNAPOLOGETIC ELEGANCE. EACH PIECE IS A SCULPTED ICON—UNTAMED AND IRRESISTIBLY UNIQUE.",
+  "works": [
+    {
+      "slug": "find-a-parrot",
+      "title": "Petrykivka Icons Collection – Find a Parrot",
+      "title_tr": "Petrykivka Icons Collection – Find a Parrot",
+      "image": "olga-gedola-01.jpeg",
+      "year": "2026",
+      "dimensions": "30 × 30 × 18 cm",
+      "technique": "Pop Art Sculpture",
+      "technique_tr": "Pop Art Sculpture",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "soft-power",
+      "title": "Petrykivka Icons Collection – Soft Power",
+      "title_tr": "Petrykivka Icons Collection – Soft Power",
+      "image": "olga-gedola-02.jpeg",
+      "year": "2026",
+      "dimensions": "30 × 30 × 18 cm",
+      "technique": "Pop Art Sculpture",
+      "technique_tr": "Pop Art Sculpture",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "boss-of-the-wild",
+      "title": "Petrykivka Icons Collection – Boss of the Wild",
+      "title_tr": "Petrykivka Icons Collection – Boss of the Wild",
+      "image": "olga-gedola-03.jpeg",
+      "year": "2026",
+      "dimensions": "30 × 30 × 18 cm",
+      "technique": "Pop Art Sculpture",
+      "technique_tr": "Pop Art Sculpture",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "beastique",
+      "title": "Petrykivka Icons Collection – Beastique",
+      "title_tr": "Petrykivka Icons Collection – Beastique",
+      "image": "olga-gedola-04.jpeg",
+      "year": "2026",
+      "dimensions": "30 × 30 × 18 cm",
+      "technique": "Pop Art Sculpture",
+      "technique_tr": "Pop Art Sculpture",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "4,000 AED / 1,000 USD",
+      "status": "disponible"
+    }
+  ]
+}

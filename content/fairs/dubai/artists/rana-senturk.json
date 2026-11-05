@@ -1,0 +1,55 @@
+{
+  "name": "Rana Şentürk",
+  "country": "Turquie",
+  "country_tr": "Türkiye",
+  "poster": "rana-senturk-afis.png",
+  "order": 11,
+  "bio_fr": "Rana Şentürk is a medical doctor and radiologist who discovered the colorful world of painting after years of working with black-and-white images. She began her artistic journey twenty years ago, studying with Selçuk Erdoğan, Hüseyin Kartal and Tuncay Deniz.\n\nShe has participated in numerous exhibitions and art fairs in Türkiye and abroad, including a solo exhibition at Ortaköy Art Center in Istanbul in 2024, as well as ArtContact Istanbul, IAAF Art & Antique Fair, Bodrum Art Fair, ArtAntalya, Abstract Infinity and the New York Painting Exhibition in the USA.\n\nInitially working with charcoal, pastel and oil, she now focuses on abstract painting, exploring color, texture and form through mixed media on canvas, wood and paper. As an animal lover, animal welfare is a central theme in most of her paintings.",
+  "bio_tr": "Rana Şentürk is a medical doctor and radiologist who discovered the colorful world of painting after years of working with black-and-white images. She began her artistic journey twenty years ago, studying with Selçuk Erdoğan, Hüseyin Kartal and Tuncay Deniz.\n\nShe has participated in numerous exhibitions and art fairs in Türkiye and abroad, including a solo exhibition at Ortaköy Art Center in Istanbul in 2024, as well as ArtContact Istanbul, IAAF Art & Antique Fair, Bodrum Art Fair, ArtAntalya, Abstract Infinity and the New York Painting Exhibition in the USA.\n\nInitially working with charcoal, pastel and oil, she now focuses on abstract painting, exploring color, texture and form through mixed media on canvas, wood and paper. As an animal lover, animal welfare is a central theme in most of her paintings.",
+  "manifesto_fr": "",
+  "manifesto_tr": "",
+  "works": [
+    {
+      "slug": "beyaz-benekli-soyut-kompozisyon",
+      "title": "Beyaz Benekli Soyut Kompozisyon",
+      "title_tr": "Beyaz Benekli Soyut Kompozisyon",
+      "image": "rana-senturk-01.jpeg",
+      "year": "",
+      "dimensions": "30 cm diameter (circular)",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "mavi-boncuklu-soyut-kompozisyon",
+      "title": "Mavi Boncuklu Soyut Kompozisyon",
+      "title_tr": "Mavi Boncuklu Soyut Kompozisyon",
+      "image": "rana-senturk-02.jpeg",
+      "year": "",
+      "dimensions": "30 cm diameter (circular)",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    },
+    {
+      "slug": "sari-boncuklu-soyut-kompozisyon",
+      "title": "Sarı Boncuklu Soyut Kompozisyon",
+      "title_tr": "Sarı Boncuklu Soyut Kompozisyon",
+      "image": "rana-senturk-03.jpeg",
+      "year": "",
+      "dimensions": "30 cm diameter (circular)",
+      "technique": "Acrylic on Canvas",
+      "technique_tr": "Acrylic on Canvas",
+      "description_fr": "",
+      "description_tr": "",
+      "price": "3,000 AED / 750 USD",
+      "status": "disponible"
+    }
+  ]
+}
